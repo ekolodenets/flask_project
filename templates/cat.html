@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for massage in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ massage }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+        {{ cat.category }}<br>
+        {{ cat.age }}<br>
+        {{ cat.price }}<br>
+        {{ cat.city }}<br>
+        {{ cat.contact }}<br>
+        {{ cat.info }}<br>
+        {{ cat.date_posted }}<br><br>
+        <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary">Back</a>
+    <a href="{{ url_for('delete_cat', id=cat.id) }}" class="btn btn-outline-danger">Delete</a>
+    <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>
+        <hr>
+{% endblock %}

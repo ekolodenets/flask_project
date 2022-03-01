@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for massage in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ massage }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+{% endfor %}
+
+    <h1>User List:</h1>
+    <br>
+    <div class="shadow p-3 mb-5 bg-body rounded">
+
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.name.label(class='form-label') }}
+        {{ form.name(class='form-control') }}
+
+        <br>
+        {{ form.submit(class='btn btn-secondary') }}
+    </form></div>
+    <br>
+  <table class="table table-light table-hover table-striped">
+  <thead><tr> <td>Breed</td><td>Edit</td><td>Delete</td></tr></thead>
+  <tr>
+  {% for i in category %}
+
+         <td>{{ i.name }}</td><td>Edit</td><td>Delete</td>
+
+      </tr><br>
+  {% endfor %}
+  </table>
+
+
+{% endblock %}

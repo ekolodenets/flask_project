@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for massage in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ massage }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+<form method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.category.label(class='form-label') }}
+        {{ form.category(class='form-control') }}
+
+        {{ form.age.label(class='form-label') }}
+        {{ form.age(class='form-control') }}
+
+        {{ form.price.label(class='form-label') }}
+        {{ form.price(class='form-control') }}
+
+        {{ form.city.label(class='form-label') }}
+        {{ form.city(class='form-control') }}
+
+        {{ form.contact.label(class='form-label') }}
+        {{ form.contact(class='form-control', rows='5') }}
+
+        {{ form.info.label(class='form-label') }}
+        {{ form.info(class='form-control') }}
+
+        <br>
+        {{ form.submit(class='btn btn-secondary') }}
+<a href="{{ url_for('cats') }}" class="btn btn-outline-secondary">Back</a>
+    </form>
+    <br><br>
+
+        <hr>
+{% endblock %}

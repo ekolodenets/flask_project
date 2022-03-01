@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for massage in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ massage }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+
+    <div class="card">
+  <h5 class="card-header">Dashboard</h5>
+  <div class="card-body">
+    <h5 class="card-title">{{ current_user.name }}</h5>
+    <p class="card-text">
+        <strong>Username:</strong>{{ current_user.username }}<br>
+        <strong>User ID:</strong>{{ current_user.id }}<br>
+        <strong>Email:</strong>{{ current_user.email }}<br>
+        <strong>Favourite Color:</strong>{{ current_user.favourite_color }}<br>
+        <strong>Date Joined:</strong>{{ current_user.date_added }}<br>
+    </p>
+    <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Logout</a>
+
+        <a href="{{ url_for('update', id=current_user.id)}}" class="btn btn-secondary btn-sm">Edit</a>
+      <a href="{{ url_for('delete', id=current_user.id)}}" class="btn btn-danger btn-sm">Delete</a>
+  </div>
+</div>
+    <br>
+
+
+    <div class="card">
+  <h5 class="card-header">Update profile</h5>
+  <div class="card-body">
+
+    <div class="shadow p-3 mb-5 bg-body rounded">
+
+    <form action='/dashboard' method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.name.label(class='form-label') }}
+        {{ form.name(class='form-control', value=name_to_update.name) }}
+        {{ form.username.label(class='form-label') }}
+        {{ form.username(class='form-control', value=name_to_update.username) }}
+        {{ form.email.label(class='form-label') }}
+        {{ form.email(class='form-control', value=name_to_update.email) }}
+        {{ form.favourite_color.label(class='form-label') }}
+        {{ form.favourite_color(class='form-control', value=name_to_update.favourite_color) }}
+        <br>
+        {{ form.submit(class='btn btn-secondary btn-sm') }}
+        <a href="{{ url_for('delete', id=id) }}" class="btn btn-danger btn-sm">Delete</a>
+    </form></div>
+  </div>
+    </div>
+
+
+{% endblock %}

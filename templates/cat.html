@@ -15,7 +15,9 @@
         {{ cat.info }}<br>
         {{ cat.date_posted }}<br><br>
         <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary">Back</a>
+{% if cat.poster_id == current_user.id %}
     <a href="{{ url_for('delete_cat', id=cat.id) }}" class="btn btn-outline-danger">Delete</a>
     <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>
+{% endif %}
         <hr>
 {% endblock %}

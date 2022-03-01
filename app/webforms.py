@@ -2,6 +2,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, validators, PasswordField, BooleanField, ValidationError
 from wtforms.validators import DataRequired, EqualTo, Length
 from wtforms.widgets import TextArea
+from flask_wtf.file import FileField
+
+#Create search from
+class SearchForm(FlaskForm):
+    searched = StringField('searched', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 #Create login from
 class LoginForm(FlaskForm):
@@ -17,7 +23,9 @@ class CatForm(FlaskForm):
     contact = StringField('Contact', validators=[DataRequired()])
     info = StringField('Info', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField('Submit')
-#
+
+    # category = QuerySelectField(query_factory=Country.query.all, get_pk=lambda a: a.id, get_label=lambda a: a.name)
+
 # class PostForm(FlaskForm):
 #     title = StringField('Title', validators=[DataRequired()])
 #     author = StringField('Author', validators=[DataRequired()])
@@ -31,6 +39,7 @@ class UserForm(FlaskForm):
     favourite_color = StringField('Favourite Color')
     password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash2', message='Passwords Must Match!')])
     password_hash2 = PasswordField('Confirm Password', validators=[DataRequired()])
+    profile_pic = FileField('Profile Picture')
     submit = SubmitField('Submit')
 
 class PasswordForm(FlaskForm):

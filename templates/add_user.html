@@ -10,18 +10,6 @@
 
 {% endfor %}
 
-{% if name %}
-    <h1>User Added </h1>
-    <br>
-  <table class="table table-dark table-hover table-striped">
-  <thead><tr><td>ID</td> <td>NAME</td><td>EMAIL</td><td>COLOR</td><td>DELETING</td></tr></thead>
-  <tr>
-  {% for user_ in flask1 %}
-        <td>{{ user_.id }}.</td> <td><a href="{{ url_for('update', id=user_.id)}}">{{ user_.name }}</a></td><td>{{ user_.email }}</td><td>{{ user_.favourite_color }}</td><td><a href="{{ url_for('delete', id=user_.id)}}">Delete</a></td>
-      </tr><br>
-  {% endfor %}
-  </table>
-{% else %}
     <h1>User List:</h1>
     <br>
     <div class="shadow p-3 mb-5 bg-body rounded">
@@ -52,13 +40,12 @@
     </form></div>
     <br>
   <table class="table table-light table-hover table-striped">
-  <thead><tr><td>ID</td> <td>NAME</td><td>EMAIL</td><td>COLOR</td><td>DELETING</td></tr></thead>
+  <thead><tr><td>ID</td> <td>NAME</td><td>NICKNAME</td><td>EMAIL</td><td>COLOR</td><td>DELETING</td></tr></thead>
   <tr>
   {% for user_ in flask1 %}
-        <td>{{ user_.id }}.</td> <td><a href="{{ url_for('update', id=user_.id)}}">{{ user_.name }}</a></td><td>{{ user_.username }}</td><td>{{ user_.email }}</td><td>{{ user_.favourite_color }}</td><td>PW: {{ user_.password_hash }}</td><td><a href="{{ url_for('delete', id=user_.id)}}">Delete</a></td>
+        <td>{{ user_.id }}.</td> <td><a href="{{ url_for('update', id=user_.id)}}">{{ user_.name }}</a></td><td>{{ user_.username }}</td><td>{{ user_.email }}</td><td>{{ user_.favourite_color }}</td><td><a href="{{ url_for('delete', id=user_.id)}}">Delete</a></td>
       </tr><br>
   {% endfor %}
   </table>
 
-{% endif %}
 {% endblock %}

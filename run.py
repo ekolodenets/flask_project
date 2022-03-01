@@ -1,23 +1,14 @@
+from Tools.scripts.make_ctype import method
 from flask import Flask, flash, request, jsonify, render_template, request, url_for, flash, redirect, abort
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.webforms import LoginForm, UserForm, CatForm, PasswordForm, NamerForm, CategoryForm
-
-import sqlite3
-import psycopg2
-# from config import config
-
-# # export FLASK_APP = run.py
-
-# # python -m venv myvenv
-# # myvenv\Scripts\activate
-# # export FLASK_ENV=development
-# # flask run --host="0.0.0.0" --port="5007"
-# python run.py
-from wtforms.widgets import TextArea
+from app.webforms import SearchForm, LoginForm, UserForm, CatForm, PasswordForm, NamerForm, CategoryForm
+from werkzeug.utils import secure_filename
+import uuid as uuid
+import os
 
 app = Flask(__name__)
 
@@ -29,7 +20,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:password
 
 # secret key
 app.config['SECRET_KEY'] = 'adojaio3ijo2i342fsijgsijgdl'
-# @ database
+
+UPLOAD_FOLDER = 'static/images/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -42,6 +36,34 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
+#pass search to navbar
+@app.context_processor
+def base():
+    form = SearchForm()
+    return dict(form=form)
+
+#search
+@app.route('/search', methods=['POST'])
+def search():
+    form = SearchForm()
+    cats = Cats.query
+    if form.validate_on_submit():
+        cat.searched = form.searched.data
+
+        cats = cats.filter(Cats.category.like('%' + cat.searched + '%'))
+        cats = cats.order_by(Cats.date_posted).all()
+
+        return render_template('search.html', form=form, searched=cat.searched, cats=cats)
+
+@app.route('/admin')
+@login_required
+def admin():
+    id = current_user.id
+    if id == 1:
+        return render_template('admin.html')
+    else:
+        flash('Sorry, you are not the Admin')
+        return redirect(url_for('dashboard'))
 
 # Create login page
 @app.route('/login', methods=['GET', 'POST'])
@@ -68,8 +90,7 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
-# Create dashboard page
+# Create dashboard page - error when reloading page with 'SUBMIT'
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
@@ -81,15 +102,67 @@ def dashboard():
         name_to_update.email = request.form['email']
         name_to_update.favourite_color = request.form['favourite_color']
         name_to_update.username = request.form['username']
-        try:
+        name_to_update.profile_pic = request.files['profile_pic']
+
+        if request.files['profile_pic']:
+            name_to_update.profile_pic = request.files['profile_pic']
+
+            # Grab Image Name
+            pic_filename = secure_filename(name_to_update.profile_pic.filename)
+            # Set UUID
+            pic_name = str(uuid.uuid1()) + "_" + pic_filename
+            # Save That Image
+            saver = request.files['profile_pic']
+            # Change it to a string to save to db
+            name_to_update.profile_pic = pic_name
+            try:
+                db.session.commit()
+                saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+                flash("User Updated Successfully!")
+                return render_template("dashboard.html", form=form, name_to_update=name_to_update)
+            except:
+                flash("Error! Looks like there was a problem...try again!")
+                return render_template("dashboard.html", form=form, name_to_update=name_to_update)
+        else:
             db.session.commit()
-            flash('User updated successfully')
-            return render_template('dashboard.html', form=form, name_to_update=name_to_update, id=id)
-        except:
-            flash('User updated successfully')
-            return render_template('dashboard.html', form=form, name_to_update=name_to_update)
+            flash("User Updated Successfully!")
+            return render_template("dashboard.html", form=form, name_to_update=name_to_update)
     else:
-        return render_template('dashboard.html', form=form, name_to_update=name_to_update, id=id)
+        return render_template("dashboard.html", form=form, name_to_update=name_to_update, id=id)
+
+# # Create dashboard page - dont loading tha pics
+# @app.route('/dashboard', methods=['GET', 'POST'])
+# @login_required
+# def dashboard():
+#     form = UserForm()
+#     id = current_user.id
+#     name_to_update = Users.query.get_or_404(id)
+#     if request.method == 'POST':
+#         name_to_update.name = request.form['name']
+#         name_to_update.email = request.form['email']
+#         name_to_update.favourite_color = request.form['favourite_color']
+#         name_to_update.username = request.form['username']
+#         name_to_update.profile_pic = request.files['profile_pic']
+#
+#         #grab image name
+#         pic_filename = secure_filename(name_to_update.profile_pic.filename)
+#         #set UUID
+#         pic_name = str(uuid.uuid1())+"_"+ pic_filename
+#         #save that image
+#         saver = request.files['profile_pic']
+#         #change it to a string to save to db
+#         name_to_update.profile_pic = pic_name
+#         try:
+#             db.session.commit()
+#             saver.save(os.path.join(app.config['UPLOAD_FOLDER']), pic_name)
+#
+#             flash('User updated successfully')
+#             return render_template('dashboard.html', form=form, name_to_update=name_to_update, id=id)
+#         except:
+#             flash('User updated successfully')
+#             return render_template('dashboard.html', form=form, name_to_update=name_to_update)
+#     else:
+#         return render_template('dashboard.html', form=form, name_to_update=name_to_update, id=id)
 
 
 @app.route('/cats')
@@ -135,15 +208,6 @@ def add_cat():
     return render_template('add_cat.html', form=form)
 
 
-# Create model
-# class Posts(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     title = db.Column(db.String(255))
-#     author = db.Column(db.String(255))
-#     content = db.Column(db.Text)
-#     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
-
-
 @app.route('/cat/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_cat(id):
@@ -161,67 +225,49 @@ def edit_cat(id):
         db.session.add(cat)
         db.session.commit()
         return redirect(url_for('cat', id=cat.id))
-    form.category.data = cat.category
-    form.age.data = cat.age
-    form.price.data = cat.price
-    form.city.data = cat.city
-    form.contact.data = cat.contact
-    form.info.data = cat.info
-    return render_template('edit_cat.html', form=form)
+
+    if current_user.id == cat.poster_id:
+        form.category.data = cat.category
+        form.age.data = cat.age
+        form.price.data = cat.price
+        form.city.data = cat.city
+        form.contact.data = cat.contact
+        form.info.data = cat.info
+        return render_template('edit_cat.html', form=form)
+    else:
+        flash("You Aren't Authorized To Edit This")
+        cats = Cats.query.order_by(Cats.date_posted)
+        return render_template('cats.html', cats=cats)
 
 
 @app.route('/cat/delete/<int:id>')
 @login_required
 def delete_cat(id):
     cat_to_delete = Cats.query.get_or_404(id)
-    try:
-        db.session.delete(cat_to_delete)
-        db.session.commit()
+    id = current_user.id
+    if id == cat_to_delete.poster.id:
+        try:
+            db.session.delete(cat_to_delete)
+            db.session.commit()
 
-        flash('Cat was deleted')
+            flash('Cat was deleted')
+            cats = Cats.query.order_by(Cats.date_posted)
+            return render_template('cats.html', cats=cats)
+
+        except:
+            flash('some problem while deleting')
+            cats = Cats.query.order_by(Cats.date_posted)
+            return render_template('cats.html', cats=cats)
+    else:
+        flash("You Aren't Authorized To Delete That Cat!" )
         cats = Cats.query.order_by(Cats.date_posted)
         return render_template('cats.html', cats=cats)
 
-    except:
-        flash('some problem while deleting')
-        cats = Cats.query.order_by(Cats.date_posted)
-        return render_template('cats.html', cats=cats)
-
-
-# @app.route('/posts')
-# def posts():
-#     posts = Posts.query.order_by(Posts.date_posted)
-#     return render_template('posts.html', posts=posts)
-#
-#
-# #add Post page
-# @app.route('/add-post', methods=['GET', 'POST'])
-# @login_required
-# def add_post():
-#     form = PostForm()
-#
-#     if form.validate_on_submit():
-#         post = Posts(title=form.title.data, author=form.author.data, content=form.content.data)
-#
-#         # Clear the form
-#         form.title.data = ''
-#         form.author.data = ''
-#         form.content.data = ''
-#
-#         # Add post to DB
-#         db.session.add(post)
-#         db.session.commit()
-#
-#         # Message
-#         flash('Post added successfully!')
-#
-#     # Redirect
-#     return render_template('add_post.html', form=form)
 
 # Create model
 class Cats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # category = db.Column(db.String(255))
+    category = db.Column(db.String(255))
     age = db.Column(db.Integer)
     price = db.Column(db.Integer)
     city = db.Column(db.String(20))
@@ -230,8 +276,8 @@ class Cats(db.Model):
     date_posted = db.Column(db.DateTime, default=datetime.utcnow)
     # ForeignKey to link users
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    category = db.Column(db.Integer, db.ForeignKey('category.id'))
-
+    # category = db.Column(db.Integer, db.ForeignKey('category'))
+#
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -245,6 +291,7 @@ class Users(db.Model, UserMixin):
     favourite_color = db.Column(db.String(120))
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     password_hash = db.Column(db.String(128))
+    profile_pic = db.Column(db.String(), nullable=True)
     # user can have many Cats
     cats = db.relationship('Cats', backref='poster')
 
@@ -369,28 +416,6 @@ def page_not_found(e):
 def page_not_found(e):
     # return "<h1>404</h1><p>C'mon, this page does not exist</p>", 404
     return render_template('500.html'), 500
-
-
-@app.route('/test_pw', methods=['GET', 'POST'])
-def test_pw():
-    email = None
-    password = None
-    pw_to_check = None
-    passed = None
-    form = PasswordForm()
-    # validate form
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password_hash.data
-        form.email.date = ''
-        form.password_hash.data = ''
-        # Lookup User by Email address
-        pw_to_check = Users.query.filter_by(email=email).first()
-        # flash("Form submitted successfully!")
-        passed = check_password_hash(pw_to_check.password_hash, password)
-
-    return render_template('test_pw.html', email=email, password=password, pw_to_check=pw_to_check, passed=passed,
-                           form=form)
 
 
 @app.route('/name', methods=['GET', 'POST'])

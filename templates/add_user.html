@@ -38,12 +38,11 @@
         <br>
         {{ form.submit(class='btn btn-secondary') }}
     </form></div>
-    <br>
   <table class="table table-light table-hover table-striped">
-  <thead><tr><td>ID</td> <td>NAME</td><td>NICKNAME</td><td>EMAIL</td><td>COLOR</td><td>DELETING</td></tr></thead>
+  <thead><tr><td>ID</td> <td>NAME</td><td>NICKNAME</td></tr></thead>
   <tr>
   {% for user_ in flask1 %}
-        <td>{{ user_.id }}.</td> <td><a href="{{ url_for('update', id=user_.id)}}">{{ user_.name }}</a></td><td>{{ user_.username }}</td><td>{{ user_.email }}</td><td>{{ user_.favourite_color }}</td><td><a href="{{ url_for('delete', id=user_.id)}}">Delete</a></td>
+        <td>{{ user_.id }}.</td> <td><a href="{{ url_for('update', id=user_.id)}}">{{ user_.name }}</a></td><td>{{ user_.username }}</td>
       </tr><br>
   {% endfor %}
   </table>

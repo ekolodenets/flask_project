@@ -64,7 +64,7 @@ def search():
 @login_required
 def admin():
     id = current_user.id
-    if id == 1:
+    if id == 5:
         return render_template('admin.html')
     else:
         flash("Sorry, you are not the Admin")
@@ -79,7 +79,7 @@ def login():
         if post:
             if check_password_hash(post.password_hash, form.password.data):
                 login_user(post)
-                flash("Success")
+                flash("Successfuly Logged In")
                 return redirect(url_for("dashboard"))
             else:
                 flash("Wrong password - Try again!")
@@ -145,7 +145,7 @@ def cats():
     return render_template("cats.html", cats=cats)
 
 
-@app.route("/cats/<int:id>")
+@app.route("/cat/<int:id>")
 def cat(id):
     cat = Cats.query.get_or_404(id)
     return render_template("cat.html", cat=cat)

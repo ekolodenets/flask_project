@@ -25,9 +25,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:password
 
 # secret key
 app.config['SECRET_KEY'] = "adojaio3ijo2i342fsijgsijgdl"
-
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 UPLOAD_FOLDER = "static/images/"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -95,7 +96,9 @@ def logout():
     logout_user()
     return redirect(url_for("index"))
 
-
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 # # Create dashboard page
 @app.route("/dashboard", methods=['GET', 'POST'])
 @login_required
@@ -106,10 +109,10 @@ def dashboard():
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
-        name_to_update.favourite_color = request.form["favourite_color"]
+        # name_to_update.favourite_color = request.form["favourite_color"]
         name_to_update.username = request.form["username"]
         #check for profile_pic
-        if request.files["profile_pic"]:
+        if request.files["profile_pic"] and allowed_file(request.files["profile_pic"].filename):
             name_to_update.profile_pic = request.files["profile_pic"]
 
             #grab image name
@@ -274,7 +277,7 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
-    favourite_color = db.Column(db.String(120))
+    # favourite_color = db.Column(db.String(120))
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     password_hash = db.Column(db.String(128))
     profile_pic = db.Column(db.String(), nullable=True)
@@ -326,7 +329,7 @@ class UserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
-    favourite_color = StringField('Favourite Color')
+    # favourite_color = StringField('Favourite Color')
     password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash2', message='Passwords Must Match!')])
     password_hash2 = PasswordField('Confirm Password', validators=[DataRequired()])
     profile_pic = FileField('Profile Picture')
@@ -378,7 +381,7 @@ def update(id):
     if request.method == 'POST':
         name_to_update.name = request.form['name']
         name_to_update.email = request.form['email']
-        name_to_update.favourite_color = request.form['favourite_color']
+        # name_to_update.favourite_color = request.form['favourite_color']
         name_to_update.username = request.form['username']
         try:
             db.session.commit()
@@ -418,15 +421,14 @@ def add_user():
         if user is None:
             hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
 
-            user = Users(username=form.username.data, name=form.name.data, email=form.email.data,
-                         favourite_color=form.favourite_color.data, password_hash=hashed_pw)
+            user = Users(username=form.username.data, name=form.name.data, email=form.email.data, password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()
         # name = form.name.data
         form.username.data = ''
         form.name.data = ''
         form.email.data = ''
-        form.favourite_color.data = ''
+        # form.favourite_color.data = ''
         form.password_hash.data = ''
         flash("User added successfully!")
         return redirect(url_for("login"))

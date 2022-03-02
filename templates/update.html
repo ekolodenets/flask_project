@@ -22,8 +22,8 @@
         {{ form.username(class='form-control', value=name_to_update.username) }}
         {{ form.email.label(class='form-label') }}
         {{ form.email(class='form-control', value=name_to_update.email) }}
-        {{ form.favourite_color.label(class='form-label') }}
-        {{ form.favourite_color(class='form-control', value=name_to_update.favourite_color) }}
+{#        {{ form.favourite_color.label(class='form-label') }}#}
+{#        {{ form.favourite_color(class='form-control', value=name_to_update.favourite_color) }}#}
         <br>
         {{ form.submit(class='btn btn-secondary') }}
         <a href="{{ url_for('delete', id=id) }}" class="btn btn-danger">Delete</a>

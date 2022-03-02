@@ -7,12 +7,20 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endfor %}
+    {% if cat.cat_pic %}
+    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200" align="right">
+    {% else %}
+        <img src="{{ url_for('static', filename='images/wanted.jpg')}}" width="200" align="right">
+
+    {% endif %}
+        {{ cat.cat_pic }}<br>
         {{ cat.category }}<br>
         {{ cat.age }}<br>
         {{ cat.price }}<br>
         {{ cat.city }}<br>
         {{ cat.contact }}<br>
         {{ cat.info }}<br>
+        {{ cat.poster.name }}<br>
         {{ cat.date_posted }}<br><br>
         <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary">Back</a>
 {% if cat.poster_id == current_user.id %}

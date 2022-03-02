@@ -8,11 +8,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endfor %}
-    <h1>Add cat:</h1>
+    <h2>Add cat:</h2>
     <br>
     <div class="shadow p-3 mb-5 bg-body rounded">
 
-    <form method="post">
+    <form action="/add-cat" method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
         {{ form.category.label(class='form-label') }}
@@ -32,6 +32,9 @@
 
         {{ form.info.label(class='form-label') }}
         {{ form.info(class='form-control') }}
+<br>
+        {{ form.cat_pic.label(class='form-label') }}
+        {{ form.cat_pic(class='form-control', value=cat_pic) }}
 
         <br>
         {{ form.submit(class='btn btn-secondary') }}

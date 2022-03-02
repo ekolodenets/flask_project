@@ -31,14 +31,16 @@
               <li><a class="dropdown-item" href="{{ url_for('admin')}}">Admin Dashboard</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{{ url_for('add_user')}}">Add User</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('breed')}}">Breeds</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('breeds')}}">Breeds List</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('add_breed')}}">Add Breed</a></li>
           </ul>
         </li>
-
-            {% endif %}
+              {% else %}
 <li class="nav-item dropdown">
           <a class="nav-link disabled">Admin Panel</a>
         </li>
+            {% endif %}
+
               <li class="nav-item">
           <a class="nav-link" href="{{ url_for('dashboard')}}">Dashboard</a>
         </li>

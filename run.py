@@ -11,7 +11,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, validators, PasswordField, BooleanField, ValidationError
 from wtforms.validators import DataRequired, EqualTo, Length
 from wtforms.widgets import TextArea
-from flask_wtf.file import FileField
+from flask_wtf.file import FileField, FileRequired
 from wtforms_sqlalchemy.fields import QuerySelectField
 from sqlalchemy import desc
 
@@ -118,7 +118,7 @@ def dashboard():
             #grab image name
             pic_filename = secure_filename(name_to_update.profile_pic.filename)
             #set UUID
-            pic_name = str(uuid.uuid1())+"_"+ pic_filename
+            pic_name = str(uuid.uuid1()) + "_" + pic_filename
             #save that image
             saver = request.files["profile_pic"]
             #change it to a string to save to db
@@ -155,33 +155,63 @@ def cat(id):
 
 
 # add Cats page
-@app.route("/add-cat", methods=['GET', 'POST'])
+@app.route("/add_cat", methods=['GET', 'POST'])
 @login_required
 def add_cat():
     form = CatForm()
     if form.validate_on_submit():
         poster_id = current_user.id
-        post = Cats(category=form.category.data, age=form.age.data,
-                    price=form.price.data, city=form.city.data,
-                    contact=form.contact.data, info=form.info.data, poster_id=poster_id)
+        if request.files["cat_pic"] and allowed_file(request.files["cat_pic"].filename):
+            cat_pic = request.files["cat_pic"]
+            # pic_filename = secure_filename(cat_pic.filename)
+            cat_pic = datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + str(uuid.uuid1()) + '.jpeg'
+            saver = request.files["cat_pic"]
+            saver.save(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
+            post = Cats(category=form.category.data, age=form.age.data,
+                        price=form.price.data, city=form.city.data,
+                        contact=form.contact.data, info=form.info.data,
+                        poster_id=poster_id, cat_pic=cat_pic)
 
-        # Clear the form
-        form.category.data = ''
-        form.age.data = ''
-        form.price.data = ''
-        form.city.data = ''
-        form.contact.data = ''
-        form.info.data = ''
+            # Clear the form
+            # form.category.data = ''
+            # form.age.data = ''
+            # form.price.data = ''
+            # form.city.data = ''
+            # form.contact.data = ''
+            # form.info.data = ''
 
-        # Add post to DB
-        db.session.add(post)
-        db.session.commit()
+            # Add post to DB
+            db.session.add(post)
+            db.session.commit()
 
-        # Message
-        flash("Cat added successfully!")
-        return redirect(url_for("cats"))
+            # Message
+            flash("Cat added successfully!")
+            return redirect(url_for("cats"))
     # Redirect
     return render_template("add_cat.html", form=form)
+
+#Edit category
+@app.route("/category/edit/<int:id>", methods=['GET', 'POST'])
+@login_required
+def edit_category(id):
+    category = Category.query.get_or_404(id)
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category.name = form.name.data
+        category.wool = form.wool.data
+        category.origin = form.origin.data
+
+        # update DB
+        db.session.add(category)
+        db.session.commit()
+        return redirect(url_for("breed", id=category.id))
+
+    form.name.data = category.name
+    form.wool.data = category.wool
+    form.origin.data = category.origin
+
+    return render_template("edit_breed.html", form=form)
+
 
 
 @app.route("/cat/edit/<int:id>", methods=['GET', 'POST'])
@@ -254,6 +284,8 @@ class Cats(db.Model):
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref=db.backref('cats', lazy='dynamic'))
+    cat_pic = db.Column(db.String(), nullable=True)
+
 
     # def __init__(self, category):
     #     self.category = category
@@ -265,9 +297,15 @@ class Cats(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
+    wool = db.Column(db.String(50))
+    origin = db.Column(db.String(50))
+    about = db.Column(db.Text)
 
-    def __init__(self, name):
+    def __init__(self, name, wool, origin, about):
         self.name = name
+        self.wool = wool
+        self.origin = origin
+        self.about = about
 
     def __repr__(self):
         return self.name
@@ -311,25 +349,24 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Submit")
 
 def enabled_categories():
-    return Category.query.all()
+    return Category.query.order_by(Category.name).all()
 
 class CatForm(FlaskForm):
-    # category = StringField('Category', validators=[DataRequired()])
     age = IntegerField('Age', validators=[DataRequired()])
     price = IntegerField('Price', validators=[DataRequired()])
     city = StringField('City', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
     info = StringField('Info', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField("Submit")
-    category = QuerySelectField(query_factory=enabled_categories,
-                                allow_blank=True)
+    category = QuerySelectField(query_factory=enabled_categories, validators=[DataRequired()],
+                                allow_blank=False)
+    cat_pic = FileField('Profile Picture')
 
 
 class UserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     name = StringField("Name", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired()])
-    # favourite_color = StringField('Favourite Color')
     password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash2', message='Passwords Must Match!')])
     password_hash2 = PasswordField('Confirm Password', validators=[DataRequired()])
     profile_pic = FileField('Profile Picture')
@@ -345,7 +382,10 @@ class NamerForm(FlaskForm):
     submit = SubmitField("Submit")
 
 class CategoryForm(FlaskForm):
-    name = StringField("Add New Breed", validators=[DataRequired()])
+    name = StringField("Name Breed", validators=[DataRequired()])
+    wool = StringField("Wool length")
+    about = StringField("About", widget=TextArea())
+    origin = StringField("Origin")
     submit = SubmitField("Submit")
 
 @app.route('/delete/<int:id>')
@@ -395,21 +435,37 @@ def update(id):
 
 
 # Create Form class
-@app.route('/category', methods=['GET', 'POST'])
-def breed():
+@app.route('/breed/add', methods=['GET', 'POST'])
+def add_breed():
     name = None
+    wool = ''
+    origin = ''
+    about = ''
     form = CategoryForm()
     if form.validate_on_submit():
-        user = Category.query.filter_by(name=form.name.data).first()
-        if user is None:
-            user = Category(name=form.name.data)
-            db.session.add(user)
+        post = Category.query.filter_by(name=form.name.data).first()
+        if post is None:
+            post = Category(name=form.name.data, wool=form.wool.data,
+                            origin=form.origin.data, about=form.about.data)
+            db.session.add(post)
             db.session.commit()
         name = form.name.data
+        wool = form.wool.data
+        origin = form.origin.data
+        about = form.about.data
         form.name.data = ''
+        form.wool.data = ''
+        form.origin.data = ''
+        form.about.data = ''
         flash('User added successfully!')
+        return redirect(url_for("breeds"))
     category = Category.query.order_by(Category.name)
-    return render_template('breeds.html', form=form, name=name, category=category)
+    return render_template('add_breed.html', form=form, name=name, wool=wool, origin=origin, about=about, category=category)
+
+@app.route('/breeds', methods=['GET', 'POST'])
+def breeds():
+    category = Category.query.order_by(Category.name)
+    return render_template('breeds.html', category=category)
 
 
 @app.route('/user/add', methods=['GET', 'POST'])
@@ -420,7 +476,6 @@ def add_user():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
             hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
-
             user = Users(username=form.username.data, name=form.name.data, email=form.email.data, password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()

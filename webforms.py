@@ -3,8 +3,14 @@ from wtforms import StringField, IntegerField, SubmitField, validators, Password
 from wtforms.validators import DataRequired, EqualTo, Length
 from wtforms.widgets import TextArea
 from flask_wtf.file import FileField
+# import run.Category
+# from run.Category
+# from wtforms.sqlalchemy.fields import QuerySelectField
 
 #Create search from
+# from run import Category
+
+
 class SearchForm(FlaskForm):
     searched = StringField('searched', validators=[DataRequired()])
     submit = SubmitField('Submit')
@@ -15,22 +21,20 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+def enabled_categories():
+    return Category.query.all()
+
 class CatForm(FlaskForm):
-    category = StringField('Category', validators=[DataRequired()])
+    # category = StringField('Category', validators=[DataRequired()])
     age = IntegerField('Age', validators=[DataRequired()])
     price = IntegerField('Price', validators=[DataRequired()])
     city = StringField('City', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
     info = StringField('Info', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField('Submit')
+    category = wtforms.ext.QuerySelectField(query_factory=enabled_categories,
+                                allow_blank=True)
 
-    # category = QuerySelectField(query_factory=Country.query.all, get_pk=lambda a: a.id, get_label=lambda a: a.name)
-
-# class PostForm(FlaskForm):
-#     title = StringField('Title', validators=[DataRequired()])
-#     author = StringField('Author', validators=[DataRequired()])
-#     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
-#     submit = SubmitField('Submit')
 
 class UserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])

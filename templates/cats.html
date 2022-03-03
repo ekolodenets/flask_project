@@ -10,6 +10,12 @@
 
 <h2>All cats page</h2>
     {% for cat in cats %}
+        {% if cat.cat_pic %}
+    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200" align="right">
+    {% else %}
+        <img src="{{ url_for('static', filename='images/wanted.jpg')}}" width="200" align="right">
+
+    {% endif %}
         {{ cat.category }}<br>
         {{ cat.age }}<br>
         {{ cat.price }}<br>

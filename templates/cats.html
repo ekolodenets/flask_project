@@ -1,6 +1,14 @@
 {% extends "base.html" %}
-
 {% block content %}
+<div class="row bg-light mb-3">
+
+<!-- Side Bar Section -->
+    <div class=" col-xl-2 col-lg-3 col-md-4 col-sm-5 col-xs-4 bg-light pt-2" style=" background-color: white">
+        <div class="text-center"><h2>Breed List</h2></div>
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">Breed_1</a>
+            <a href="#" class="list-group-item list-group-item-action">Breed_2</a>
+
 {% for massage in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>{{ massage }}</strong>
@@ -8,31 +16,87 @@
     </div>
 {% endfor %}
 
-<h2>All cats page</h2>
-    {% for cat in cats %}
+        </div>
+    </div>
+<!-- End Side Bar Section -->
+
+<!-- Content Section -->
+    <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-light g-4 px-4" style=" background-color: #fefefe">
+        <div class="container bg-light">
+            <header class="section-header bg-light text-center pb-5">
+                <h1>FLUFFY HAPPINESS</h1>
+                <p>You will find a collection of pet fuzzies offers here</p>
+            </header>
+
+            <div class="row row-cols-1 row-cols-xs-1 row-cols-md-2 row-cols-xl-3 g-5 ">
+
+                {% for cat in cats %}
+<div class="col">
+    <div class="card h-100 border-gray shadow">
+
         {% if cat.cat_pic %}
-    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200" align="right">
+    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" class="card-img  rounded">
     {% else %}
-        <img src="{{ url_for('static', filename='images/wanted.jpg')}}" width="200" align="right">
-
-    {% endif %}
-        {{ cat.category }}<br>
-        {{ cat.age }}<br>
-        {{ cat.price }}<br>
-        {{ cat.city }}<br>
-        {{ cat.poster.name }}<br>
-        {{ cat.contact }}<br>
-        {{ cat.info }}<br>
-        {{ cat.date_posted.strftime('%Y.%m.%d %H:%m') }}<br>
-        <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-outline-secondary">View cat</a>
-    {% if cat.poster_id == current_user.id or current_user.id == 5 %}
-        <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>
-        <a href="{{ url_for('delete_cat', id=cat.id) }}" class="btn btn-outline-danger">Delete</a>
+        <img src="{{ url_for('static', filename='images/wanted.jpg')}}"  class="card-img rounded">
     {% endif %}
 
-        <hr>
+      <div class="card-body p-lg-0">
+        <h5 class="card-title text-center">
+<strong>{{ cat.category }} from {{ cat.city }}</strong>
+
+        </h5>
+
+
+        <p class="card-text text-center">
+                                {{ cat.age }} months</p>
+          <p class="text-center">
+              {% if cat.price == 0 %}
+                  <p class="text free text-center"><strong>FREE</strong>
+                {% else %}
+                  <p class="text-center">
+                 <strong> ${{ cat.price }} </strong>
+              {% endif %}
+          </p>
+
+
+{#                                Owner: {{ cat.poster.name }}#}
+{#                                Contact: {{ cat.contact }}#}
+
+          <p class="text-center pt-2 pb-1"> <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-secondary btn-sm text-light">V I E W</a></p>
+      </div>
+
+      <div class="card-footer bg-white text-center">
+        <small class="text-muted"><strong>Added:</strong> {{ cat.date_posted.strftime('%Y.%m.%d %H:%m') }}</small>
+      </div>
+    </div>
+  </div>
+
+
+{#        <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-outline-secondary">View cat</a>#}
+{#    {% if cat.poster_id == current_user.id or current_user.id == 5 %}#}
+{#        <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>#}
+{#        <a href="{{ url_for('delete_cat', id=cat.id) }}" class="btn btn-outline-danger">Delete</a>#}
+{#    {% endif %}#}
+{#</div>#}
+
+
+
+
+
+
     {% endfor %}
+            </div>
+        </div>
+    </div>
+<!-- End Content Section -->
 
 
-
+</div>
 {% endblock %}
+
+
+
+
+
+
+<!-- One card -->

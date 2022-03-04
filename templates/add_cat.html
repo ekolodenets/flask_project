@@ -1,22 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <div class="container ">
 
-{% for massage in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>{{ massage }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-{% endfor %}
-    <h2>Add cat:</h2>
-    <br>
-    <div class="shadow p-3 mb-5 bg-body rounded">
+<h2 class="text-center">Add cat:</h2>
+
+    <br><div class="d-flex justify-content-center">
+
+    <div class="shadow p-3 mb-5 bg-body rounded d-inline-flex p-2 bd-highlight">
 
     <form action="/add_cat" method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
         {{ form.category.label(class='form-label') }}
-        {{ form.category(class='form-control') }}
+        {{ form.category(class='form-select') }}
 
         {{ form.age.label(class='form-label') }}
         {{ form.age(class='form-control') }}
@@ -32,12 +29,24 @@
 
         {{ form.info.label(class='form-label') }}
         {{ form.info(class='form-control') }}
-<br>
+        <br>
         {{ form.cat_pic.label(class='form-label') }}
         {{ form.cat_pic(class='form-control', value=cat_pic) }}
 
-        <br>
-        {{ form.submit(class='btn btn-secondary') }}
-    </form></div>
+        <br><br>
+        {{ form.submit(class='btn btn-outline-secondary') }}
+    </form>
+
+    </div></div>
     <br>
+
+{% for massage in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ massage }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endfor %}
+
+    </div>
+
 {% endblock %}

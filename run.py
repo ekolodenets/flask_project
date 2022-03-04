@@ -97,7 +97,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("cats"))
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -235,9 +235,9 @@ def add_cat():
     if form.validate_on_submit():
         poster_id = current_user.id
         if request.files["cat_pic"] and allowed_file(request.files["cat_pic"].filename):
-            cat_pic = request.files["cat_pic"]
+            # cat_pic = request.files["cat_pic"]
             # pic_filename = secure_filename(cat_pic.filename)
-            cat_pic = 'cat_' + datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + str(uuid.uuid1()) + '.jpeg'
+            cat_pic = 'cat_' + datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + '.jpeg'
             saver = request.files["cat_pic"]
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
             post = Cats(category=form.category.data, age=abs(form.age.data),
@@ -305,9 +305,11 @@ def delete_cat(id):
     id = current_user.id
     if id == cat_to_delete.poster.id or id == 5:
         try:
+            cat_pic = cat_to_delete.cat_pic
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
             db.session.delete(cat_to_delete)
-            db.session.commit()
 
+            db.session.commit()
             flash("Cat was deleted")
             cats = Cats.query.order_by(desc(Cats.date_posted))
             return render_template("cats.html", cats=cats)
@@ -324,7 +326,7 @@ def delete_cat(id):
 
 
 # List of Cats
-@app.route("/cats")
+@app.route("/")
 def cats():
     # grab all the cats from the data base
     cats = Cats.query.order_by(desc(Cats.date_posted))
@@ -405,11 +407,11 @@ def breeds():
 
 
 
-# INDEX PAGE
-@app.route("/")
-def index():
-    pizza = ['pepperoni', 'Cheese', 'Beefe', 'Pineapple', 35]
-    return render_template('index.html', pizza=pizza)
+# # INDEX PAGE
+# @app.route("/")
+# def index():
+#     pizza = ['pepperoni', 'Cheese', 'Beefe', 'Pineapple', 35]
+#     return render_template('index.html', pizza=pizza)
 
 
 @app.route("/user/<name>")
@@ -460,24 +462,24 @@ def enabled_categories():
 
 class CatForm(FlaskForm):
     age = IntegerField('Age', validators=[DataRequired()])
-    price = IntegerField('Price', validators=[DataRequired()])
+    price = IntegerField('Price')
     city = StringField('City', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
     info = StringField('Info', validators=[DataRequired()], widget=TextArea())
     submit = SubmitField("Submit")
     category = QuerySelectField(query_factory=enabled_categories, validators=[DataRequired()],
                                 allow_blank=False)
-    cat_pic = FileField('Profile Picture')
+    cat_pic = FileField('Cat Picture')
 
     # def validate_price
 
 
 class UserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
-    name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired()])
+    name = StringField("Your Name", validators=[DataRequired()])
+    email = StringField("Your Email", validators=[DataRequired()])
     password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash2', message='Passwords Must Match!')])
-    password_hash2 = PasswordField('Confirm Password', validators=[DataRequired()])
+    password_hash2 = PasswordField('Confirm', validators=[DataRequired()])
     profile_pic = FileField('Profile Picture')
     submit = SubmitField("Submit")
 
@@ -521,11 +523,20 @@ class Cats(db.Model):
     category = db.relationship('Category', backref=db.backref('cats', lazy='dynamic'))
     cat_pic = db.Column(db.String(), nullable=True)
 
-    # def __init__(self, category):
-    #     self.category = category
-
     def __repr__(self):
         return '<Cats %r>' % self.contact
+
+    # Example of checking input data
+    # class UserRegistrationForm(FlaskForm):
+    #     # ...
+    #     submit = SubmitField(label=('Submit'))
+    #
+    #     def validate_username(self, username):
+    #         excluded_chars = " *?!'^+%&amp;/()=}][{$#"
+    #         for char in self.username.data:
+    #             if char in excluded_chars:
+    #                 raise ValidationError(
+    #                     f"Character {char} is not allowed in username.")
 
 
 class Category(db.Model):

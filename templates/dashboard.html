@@ -1,65 +1,82 @@
 {% extends 'base.html' %}
 {% block content %}
-{% for massage in get_flashed_messages() %}
+<div class="container">
 
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>{{ massage }}</strong>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
 
-{% endfor %}
+
 
 <h2>Dashboard</h2>
 	<br/>
 
-	<div class="card">
-  <div class="card-header">
-    {{ current_user.name }}
-  </div>
-  <div class="card-body">
+<div class="shadow card ">
+    <div class="card-header "><strong>{{ current_user.name }}</strong></div>
 
-    <p class="card-text">
 
-<div class="container">
-	<div class="row">
-		<div class="col-8">
-                <strong>Username:</strong> {{ current_user.username }}<br>
-                <strong>User ID:</strong> {{ current_user.id }}<br>
-                <strong>Email:</strong> {{ current_user.email }}<br>
-                <strong>Cats:</strong> number of cats<br>
-{#                <strong>Profile Pic:</strong> {{ current_user.profile_pic }}<br>#}
-                <strong>Date Joined:</strong> {{ current_user.date_added.strftime('%Y.%m.%d') }}<br>
+    <div class="card-body">
+        <p class="card-text">
+        <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <dl class="row">
+  <dt class="col-sm-2 ">Username:</dt>
+  <dd class="col-sm-10 ">{{ current_user.username }}</dd>
+      <dt class="col-sm-2 ">User ID:</dt>
+  <dd class="col-sm-10 ">{{ current_user.id }}</dd>
+      <dt class="col-sm-2 ">Email:</dt>
+  <dd class="col-sm-10">{{ current_user.email }}</dd>
+      <dt class="col-sm-2">Cats:</dt>
+  <dd class="col-sm-10 ">number of cats</dd>
+      <dt class="col-sm-2 ">Profile Pic:</dt>
+  <dd class="col-sm-10 ">{{ current_user.profile_pic }}</dd>
+      <dt class="col-sm-2 ">Date Joined:</dt>
+  <dd class="col-sm-10 ">{{ current_user.date_added.strftime('%Y.%m.%d') }}</dd>
+</dl>
                 </p>
             <br/><br/>
                 <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Logout</a>
-                <a href="{{ url_for('update', id=current_user.id)}}" class="btn btn-secondary btn-sm">Edit</a>
-                <a href="{{ url_for('delete', id=current_user.id)}}" class="btn btn-danger btn-sm">Delete</a>
+                <a class="btn btn-danger btn-sm" data-bs-toggle="collapse" href="#warningbeforedelete" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Delete Profile
+                </a>
+                <div class="collapse" id="warningbeforedelete">
+                    <div class="card card-body text-center ">
+                        <strong>Are You Sure You Want To Delete This Profile?</strong><br>
+                        <p><a href="{{ url_for('delete', id=current_user.id)}}" class="btn btn-danger btn-sm ">Yes! Delete!</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4 ">
+
+
+                {% if current_user.profile_pic %}
+                    <img src="{{ url_for('static', filename='images/' + current_user.profile_pic)}}" class="rounded float-end" alt="Responsive Image" height="200">
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default_profile_pic.jpg')}}" height="200" width="200" class="img-fluid">
+                {% endif %}
+
 
             </div>
 
-            <div class="col-4">
-        {% if current_user.profile_pic %}
-
-		<img src="{{ url_for('static', filename='images/' + current_user.profile_pic)}}" width="200" align="right">
-
-		{% else %}
-
-		<img src="{{ url_for('static', filename='images/default_profile_pic.png')}}" width="200" align="right">
-
-		{% endif %}
-            </div>
 
         </div>
     </div>
     </div>
+
+
+
+
+
 </div>
-<br>
 
-
-<div class="card">
-    <h5 class="card-header">Update profile</h5>
-    <div class="card-body">
-        <div class="shadow p-3 mb-5 bg-body rounded">
+<div class="shadow accordion" id="accordionFlushExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="flush-headingOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+        <h5>Edit Profile</h5>
+      </button>
+    </h2>
+    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+      <div class="shadow accordion-body">
             <form action='/dashboard' method="post" enctype="multipart/form-data">
 
                 {{ form.hidden_tag() }}
@@ -77,8 +94,24 @@
                 <br>
                 {{ form.submit(class='btn btn-secondary btn-sm') }}
             </form>
-        </div>
+
+
+      </div>
     </div>
+  </div>
 </div>
 
+{% for massage in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>{{ massage }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+{% endfor %}
+</div>
 {% endblock %}
+{#       <style>#}
+{#        .col-4 {#}
+{#            margin-top: 20px;#}
+{#        }#}
+{#    </style>#}

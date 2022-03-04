@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <div class="container">
 
 {% for massage in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -10,8 +11,8 @@
 
 {% endfor %}
 
-    <h2>Add breed:</h2>
-    <br>
+    <h2 class="text-center">Add breed:</h2>
+    <br><div class="d-flex justify-content-center">
     <div class="shadow p-3 mb-5 bg-body rounded">
 
     <form method="post">
@@ -30,6 +31,9 @@
         {{ form.about(class='form-control', rows='5') }}
 
         <br>
-        {{ form.submit(class='btn btn-secondary') }}
-    </form></div>
+        {{ form.submit(class='btn btn-outline-secondary') }}
+    </form>
+        </div>
+</div>
+    </div>
 {% endblock %}

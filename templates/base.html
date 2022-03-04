@@ -10,17 +10,30 @@
 
       <!-- Our CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-
-    <title>CATHOUSE</title>
+    <title>K I T T I E S</title>
+      <link href="static/images/icon.png" rel="icon">
   </head>
+
   <body>
+{#  <header id="header">      <!-- Uncomment to flew navbar -->#}
   {% include 'navbar.html' %}
-    <br/>
-        <div class="container">
+{#  </header>      <!-- Uncomment to flew navbar -->#}
+
+
+
+
+
+<main id="main">
+    <!-- Секция#1 -->
+{#    <section id="services" class="section-bg">#}
+      <div class="container-fluid bg-light themed-container pt-3">
             {% block content %}
 
             {% endblock %}
-        </div>
+</div>
+{#    </section>#}
+	<!-- Конец Секция #1 -->
+  </main>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

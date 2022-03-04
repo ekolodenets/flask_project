@@ -9,7 +9,7 @@
     </div>
 {% endfor %}
 
-    {% if id == current_user.id %}
+    {% if id == current_user.id or current_user.id == 5 %}
     <h1>Update user...</h1>
     <br>
     <div class="shadow p-3 mb-5 bg-body rounded">

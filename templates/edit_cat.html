@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+        <div class="container">
 {% for massage in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>{{ massage }}</strong>
@@ -35,4 +36,5 @@
     <br><br>
 
         <hr>
+        </div>
 {% endblock %}

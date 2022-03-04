@@ -20,7 +20,8 @@ app = Flask(__name__)
 # add database
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 # postgresql DB
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://ssvugulxzncwuu:df4d204ca46d2b77ce1af660d316ab54f6f28017fd764b57c4a47e55dd159e1e@ec2-54-158-26-89.compute-1.amazonaws.com:5432/d8mduae8vpckid"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aroxklnqgdwyjo:45e12ea1729c93cbcc740f010aa657cc3ef1acb074c7e4caa3858508e8d73f01@ec2-3-228-222-169.compute-1.amazonaws.com:5432/dcqng4p0da090d"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:password@localhost/flask1"
 
 # secret key
 app.config['SECRET_KEY'] = "adojaios3ijs2i342f3423ghfgf4145sijgsij63634613613cvbxdg16176s8ssdhs37695fb9dl"

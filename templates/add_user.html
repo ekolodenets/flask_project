@@ -10,7 +10,7 @@
     </div>
 
 {% endfor %}
-        <h2 class="text-center">Registration Form:</h2>
+        <h2 class="text-center">Registration Form</h2>
     <br><div class="d-flex justify-content-center">
         <div class="shadow p-3 mb-5 bg-body rounded">
 
@@ -40,9 +40,8 @@
                 <span class="input-group-text">{{ form.password_hash2.label | upper }}</span>
                 {{ form.password_hash2(class='form-control') }}
             </div>
-            <br>
-            <br>
-            {{ form.submit(class='btn btn-outline-secondary') }}
+            <br><div class="col text-center">
+            {{ form.submit(class='btn btn-outline-secondary') }}</div>
         </form></div></div>
     <h2 class="text-center">5 Last Registered Users</h2>
         <br>

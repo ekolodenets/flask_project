@@ -51,10 +51,10 @@ td a {
 
 /*delete blue color link*/
 }
-a:link {
+td a:link {
   color: black;
 }
 
-a:visited {
+td a:visited {
   color: black;
 }

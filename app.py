@@ -68,7 +68,7 @@ def base():
 @login_required
 def admin():
     id = current_user.id
-    if id == 5:
+    if id == 1:
         return render_template('admin.html')
     else:
         flash("Sorry, you are not the Admin")
@@ -304,7 +304,7 @@ def edit_cat(id):
 def delete_cat(id):
     cat_to_delete = Cats.query.get_or_404(id)
     id = current_user.id
-    if id == cat_to_delete.poster.id or id == 5:
+    if id == cat_to_delete.poster.id or id == 1:
         try:
             cat_pic = cat_to_delete.cat_pic
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))

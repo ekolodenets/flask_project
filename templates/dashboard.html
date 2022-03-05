@@ -47,25 +47,16 @@
 
             <div class="col-4 ">
 
-
                 {% if current_user.profile_pic %}
                     <img src="{{ url_for('static', filename='images/' + current_user.profile_pic)}}" class="rounded float-end" alt="Responsive Image" height="200">
                 {% else %}
                     <img src="{{ url_for('static', filename='images/default_profile_pic.jpg')}}" height="200" width="200" class="img-fluid">
                 {% endif %}
 
-
             </div>
-
-
         </div>
     </div>
     </div>
-
-
-
-
-
 </div>
 
 <div class="shadow accordion" id="accordionFlushExample">
@@ -86,16 +77,12 @@
                 {{ form.username(class='form-control', value=name_to_update.username) }}
                 {{ form.email.label(class='form-label') }}
                 {{ form.email(class='form-control', value=name_to_update.email) }}
-
                 <br>
-
                 {{ form.profile_pic.label(class='form-label') }}
                 {{ form.profile_pic(class='form-control', value=name_to_update.profile_pic) }}
                 <br>
                 {{ form.submit(class='btn btn-secondary btn-sm') }}
             </form>
-
-
       </div>
     </div>
   </div>
@@ -111,8 +98,3 @@
 </div>
     <br>
 {% endblock %}
-{#       <style>#}
-{#        .col-4 {#}
-{#            margin-top: 20px;#}
-{#        }#}
-{#    </style>#}

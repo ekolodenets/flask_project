@@ -1,33 +1,139 @@
 {% extends "base.html" %}
 {% block content %}
-        <div class="container border rounded">
 
-    {% if cat.cat_pic %}
-    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200">
-    {% else %}
-        <img src="{{ url_for('static', filename='images/wanted.jpg')}}" width="200">
-
-    {% endif %}
-        {{ cat.cat_pic }}<br>
-        {{ cat.category }}<br>
-        {{ cat.age }}<br>
-        {{ cat.price }}<br>
-        {{ cat.city }}<br>
-        {{ cat.contact }}<br>
-        {{ cat.info }}<br>
-        {{ cat.poster.name }}<br>
-        {{ cat.date_posted.strftime('%Y.%m.%d %H:%m') }}<br><br>
-        <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary">Back</a>
-{% if cat.poster_id == current_user.id or current_user.id == 1 %}
-    <a href="{{ url_for('delete_cat', id=cat.id) }}" class="btn btn-outline-danger">Delete</a>
-    <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>
-{% endif %}
-
+    <div class="d-flex justify-content-center ">
+        <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-gray">
+{#            <header class="section-header mt-4 text-center"><h3>{{cat.category}}</h3></header>#}
+<!--картинка-->
+        <div class="row justify-content-center ">
+            <div class="card border-light bg-gray" style="width: 25rem; padding: 0;">
+                {% if cat.cat_pic %}
+                    <img class="card-img-top" src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200">
+                {% else %}
+                    <img class="card-img-top" src="{{ url_for('static', filename='images/wanted.jpg')}}" width="200">
+                {% endif %}
+            </div>
         </div>
-    {% for massage in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>{{ massage }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!--картинка-->
+            <div class="row align-items-center justify-content-center">
+                <div class="row bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col ">
+                        <div class="p-2 text-white text-right bg-dark text-transform"><b>Breed</b>
+                        </div>
+                    </div>
+                    <div class="col ">
+                        <div class="p-2 text-white bg-dark"><a href="#">{{ cat.category }}</a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="row bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-right bg-dark"><b>Age</b></div>
+                    </div>
+                    <div class="col">
+                        <div class="p-2 text-white bg-dark">{{ cat.age }} months</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="row mx-md-n1 bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-right bg-dark"><b>Cost</b>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="p-2 text-white bg-dark">
+                            {% if cat.price == 0 %}
+                                <p class="text-left">F R E E</p>
+                            {% else %}
+                                <p class="text-left">{{cat.price}} р.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-right bg-dark"><b>City</b></div>
+                    </div>
+                    <div class="col">
+                        <div class="p-2 text-white bg-dark">{{ cat.city }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-right bg-dark"><b>Contacts</b></div>
+                    </div>
+                    <div class="col">
+                        <div class="p-2 text-white bg-dark">{{ cat.contact }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-right bg-dark"><b>Information</b></div>
+                    </div>
+                    <div class="col">
+                        <div class="p-2 text-white bg-dark">{{ cat.info }}</div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="row align-items-center justify-content-center">
+                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-right bg-dark"><b>Posted by</b></div>
+                    </div>
+                    <div class="col">
+                        <div class="p-2 text-white bg-dark">{{ cat.poster.name  }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="row mx-md-n1  bg-dark" style="max-width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-right bg-dark"><b>Added</b></div>
+                    </div>
+                    <div class="col">
+                        <div class="p-2 text-white bg-dark">{{ passed }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                    <div class="col">
+                        <div class="p-2 text-white text-center bg-dark">
+                            <b>
+                            <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary">Back</a>
+                                {% if cat.poster_id == current_user.id or current_user.id == 1 %}
+                                    <a href="{{ url_for('delete_cat', id=cat.id) }}" class="btn btn-outline-danger">Delete</a>
+                                    <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>
+                                {% endif %}
+                            </b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-{% endfor %}
+
+    {% for massage in get_flashed_messages() %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>{{ massage }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
 {% endblock %}

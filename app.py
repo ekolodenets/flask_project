@@ -14,6 +14,7 @@ from wtforms.widgets import TextArea
 from flask_wtf.file import FileField, FileRequired
 from wtforms_sqlalchemy.fields import QuerySelectField
 from sqlalchemy import desc
+from datetime import datetime, date, time
 
 app = Flask(__name__)
 
@@ -128,7 +129,7 @@ def dashboard():
             # grab image name
             pic_filename = secure_filename(name_to_update.profile_pic.filename)
             # set UUID
-            pic_name = 'user_' + datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + str(uuid.uuid1()) + '.jpeg'
+            pic_name = 'user_' + str(datetime.datetime.now().date())+'_' + str(uuid.uuid1()) + '.jpeg'
             # save that image
             saver = request.files["profile_pic"]
             # change it to a string to save to db
@@ -169,11 +170,9 @@ def add_user():
                          password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()
-        # name = form.name.data
         form.username.data = ''
         form.name.data = ''
         form.email.data = ''
-        # form.favourite_color.data = ''
         form.password_hash.data = ''
         flash("User added successfully!")
         return redirect(url_for("login"))
@@ -185,39 +184,51 @@ def add_user():
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update(id):
-    form = UserForm()
-    name_to_update = Users.query.get_or_404(id)
-    if request.method == 'POST':
-        name_to_update.name = request.form['name']
-        name_to_update.email = request.form['email']
-        name_to_update.username = request.form['username']
-        db.session.commit()
-        flash('User updated successfully')
-        return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
+    if id == current_user.id or current_user.id == 1:
+        form = UserForm()
+        name_to_update = Users.query.get_or_404(id)
+        if request.method == 'POST':
+            name_to_update.name = request.form['name']
+            name_to_update.email = request.form['email']
+            name_to_update.username = request.form['username']
+            db.session.commit()
+            flash('User updated successfully')
+            return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
+        else:
+            return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
     else:
-        return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
-
+        flash("Sorry You Can't Edit This User")
+        return redirect(url_for("add_user"))
 
 # Delete User
 @app.route('/delete/<int:id>')
 @login_required
 def delete(id):
-    if id == current_user.id:
+    if id == current_user.id or current_user.id == 1:
         name = None
         form = UserForm()
         user_to_delete = Users.query.get_or_404(id)
         try:
-            db.session.delete(user_to_delete)
-            db.session.commit()
-            flash("User Deleted Successfully. Say 'Good Bye To Him'")
-            flask1 = Users.query.order_by(Users.date_added)
-            return render_template("add_user.html", form=form, name=name, flask1=flask1)
+            try:
+                profile_pic = user_to_delete.profile_pic
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], profile_pic))
+
+                db.session.delete(user_to_delete)
+                db.session.commit()
+                flash("User Deleted Successfully. Say 'Good Bye To Him'")
+                return redirect(url_for("add_user"))
+
+            except:
+                db.session.delete(user_to_delete)
+                db.session.commit()
+                flash("User Deleted Successfully. Say 'Good Bye To Him'")
+                return redirect(url_for("add_user"))
         except:
             flash("We Have Some Problems Here While Deleting User")
-            return render_template("add_user.html")
+            return redirect(url_for("add_user"))
     else:
         flash("Sorry You Can't Delete This User")
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("add_user"))
 
 
 '''END USER BLOCK'''
@@ -237,7 +248,7 @@ def add_cat():
         if request.files["cat_pic"] and allowed_file(request.files["cat_pic"].filename):
             # cat_pic = request.files["cat_pic"]
             # pic_filename = secure_filename(cat_pic.filename)
-            cat_pic = 'cat_' + datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + '.jpeg'
+            cat_pic = 'cat_' + str(datetime.datetime.now().date()) + '_' + str(uuid.uuid1()) + '.jpeg'
             saver = request.files["cat_pic"]
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
 
@@ -339,10 +350,19 @@ def cats():
 
 
 # Cat's Page
+import datetime
 @app.route("/cat/<int:id>")
 def cat(id):
     cat = Cats.query.get_or_404(id)
-    return render_template("cat.html", cat=cat)
+    time = datetime.datetime.now()
+    diff = time - cat.date_posted
+    x = divmod(diff.total_seconds(), 60)
+    m_t = divmod(x[0], 60)
+    h_t = divmod(m_t[0], 24)
+    d, h = int(h_t[0]), int(h_t[1])
+    passed = f'{d} d {h} h ago'
+    print(passed)
+    return render_template("cat.html", cat=cat, passed=passed)
 
 
 
@@ -427,9 +447,9 @@ def about():
 #     return render_template('index.html', pizza=pizza)
 
 
-@app.route("/user/<name>")
-def user(name):
-    return render_template("user.html", user_name=name)
+# @app.route("/user/<name>")
+# def user(name):
+#     return render_template("user.html", user_name=name)
 
 
 @app.errorhandler(404)
@@ -532,7 +552,7 @@ class Cats(db.Model):
     city = db.Column(db.String(20))
     contact = db.Column(db.String(255))
     info = db.Column(db.Text)
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    date_posted = db.Column(db.DateTime, default=datetime.datetime.now)
     # ForeignKey to link users
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
@@ -578,7 +598,7 @@ class Users(db.Model, UserMixin):
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
     # favourite_color = db.Column(db.String(120))
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_added = db.Column(db.DateTime, default=datetime.datetime.now)
     password_hash = db.Column(db.String(128))
     profile_pic = db.Column(db.String(), nullable=True)
     # user can have many Cats

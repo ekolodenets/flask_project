@@ -42,18 +42,28 @@ h6 {
 }
 
 /*set row table linkable*/
-tr:hover { background: red; }
 td a {
     display: block;
     /*border: 1px solid black;*/
     /*padding: 16px;*/
     text-decoration: none;
-
 /*delete blue color link*/
 }
+
+a {
+    text-decoration: none;
+    color: #eeeeee;
+}
+
+a:hover {
+    text-decoration: none;
+    color: red;
+}
+
 td a:link {
   color: black;
 }
+
 
 td a:visited {
   color: black;
@@ -114,3 +124,4 @@ Custom media queries
 @media (min-width: 950px) and (max-width:1100px) {
   dd {font-size:1rem;}
 }
+

@@ -1,19 +1,20 @@
 {% extends 'base.html' %}
-
 {% block content %}
+    <div class="container ">
 
-{% for massage in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>{{ massage }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-{% endfor %}
+        {% for massage in get_flashed_messages() %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>{{ massage }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
 
-    {% if id == current_user.id or current_user.id == 5 %}
-    <h1>Update user...</h1>
-    <br>
-    <div class="shadow p-3 mb-5 bg-body rounded">
-    <form action='/update/{{ name_to_update.id }}' method="post">
+        {% if id == current_user.id or current_user.id == 1 %}
+            <h2 class="text-center">Update user {{ name_to_update.name }}</h2>
+            <br>
+            <div class="d-flex justify-content-center">
+                <div class="shadow p-3 mb-5 bg-body rounded">
+                    <form action='/update/{{ name_to_update.id }}' method="post">
         {{ form.hidden_tag() }}
 
         {{ form.name.label(class='form-label') }}
@@ -22,21 +23,38 @@
         {{ form.username(class='form-control', value=name_to_update.username) }}
         {{ form.email.label(class='form-label') }}
         {{ form.email(class='form-control', value=name_to_update.email) }}
-{#        {{ form.favourite_color.label(class='form-label') }}#}
-{#        {{ form.favourite_color(class='form-control', value=name_to_update.favourite_color) }}#}
-        <br>
-        {{ form.submit(class='btn btn-secondary') }}
-        <a href="{{ url_for('delete', id=id) }}" class="btn btn-danger">Delete</a>
-    </form></div>
-    <br>
+                        <br>
+                        <div class="col text-center">
+                            {{ form.submit(class='btn btn-outline-secondary btn-sm') }}
+                            {% if current_user.id == 1 %}
+                                <a class="btn btn-danger btn-sm" data-bs-toggle="collapse" href="#warningbeforedelete" role="button" aria-expanded="false" aria-controls="collapseExample">Delete Profile
+                                </a>
+                                <div class="collapse" id="warningbeforedelete">
+                                    <div class="card card-body text-center ">
+                                        <strong>Are You Sure You Want <br>To Delete This Profile?</strong>
+                                        <br>
+                                        <p>
+                                            <a href="{{ url_for('delete', id=id)}}" class="btn btn-danger btn-sm ">Yes! Delete!</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            {%  endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <br>
+        {%  else %}
 
-    {%  else %}
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>Sorry You Can't Edit This User</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Sorry You Can't Edit This User</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <h2>Access Denied!</h2>
+            <p>Sorry, you can't access this user profile...</p>
+            </div>
+
+        {% endif %}
+
     </div>
-        <h2>Access Denied!</h2>
-        <p>Sorry, you can't access this user profile...</p>
-    {% endif %}
-
 {% endblock %}

@@ -20,7 +20,8 @@ app = Flask(__name__)
 # add database
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 # postgresql DB
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://aroxklnqgdwyjo:45e12ea1729c93cbcc740f010aa657cc3ef1acb074c7e4caa3858508e8d73f01@ec2-3-228-222-169.compute-1.amazonaws.com:5432/dcqng4p0da090d"
+app.config[
+    "SQLALCHEMY_DATABASE_URI"] = "postgresql://aroxklnqgdwyjo:45e12ea1729c93cbcc740f010aa657cc3ef1acb074c7e4caa3858508e8d73f01@ec2-3-228-222-169.compute-1.amazonaws.com:5432/dcqng4p0da090d"
 # app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:password@localhost/flask1"
 
 # secret key
@@ -28,7 +29,6 @@ app.config['SECRET_KEY'] = "adojaios3ijs2i342f3423ghfgf4145sijgsij63634613613cvb
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 UPLOAD_FOLDER = "static/images/"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -42,13 +42,15 @@ login_manager.login_view = "login"
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
-#pass search to navbar
+
+# pass search to navbar
 @app.context_processor
 def base():
     form = SearchForm()
     return dict(form=form)
 
-#search
+
+# search
 # @app.route("/search", methods=['POST'])
 # def search():
 #     form = SearchForm()
@@ -62,6 +64,7 @@ def base():
 #         return render_template("search.html", form=form, searched=cat.searched, cats=cats)
 
 '''ADMINISTRATION BLOCK'''
+
 
 # Admin Page
 @app.route("/admin")
@@ -100,6 +103,7 @@ def logout():
     logout_user()
     return redirect(url_for("cats"))
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -117,17 +121,17 @@ def dashboard():
         name_to_update.email = request.form["email"]
         # name_to_update.favourite_color = request.form["favourite_color"]
         name_to_update.username = request.form["username"]
-        #check for profile_pic
+        # check for profile_pic
         if request.files["profile_pic"] and allowed_file(request.files["profile_pic"].filename):
             name_to_update.profile_pic = request.files["profile_pic"]
 
-            #grab image name
+            # grab image name
             pic_filename = secure_filename(name_to_update.profile_pic.filename)
-            #set UUID
+            # set UUID
             pic_name = 'user_' + datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + str(uuid.uuid1()) + '.jpeg'
-            #save that image
+            # save that image
             saver = request.files["profile_pic"]
-            #change it to a string to save to db
+            # change it to a string to save to db
             name_to_update.profile_pic = pic_name
             try:
                 db.session.commit()
@@ -146,11 +150,11 @@ def dashboard():
     else:
         return render_template("dashboard.html", form=form, name_to_update=name_to_update, id=id)
 
+
 '''END ADMINISTRATION BLOCK'''
 
-
-
 '''USER BLOCK'''
+
 
 # Add User
 @app.route('/user/add', methods=['GET', 'POST'])
@@ -161,7 +165,8 @@ def add_user():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
             hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
-            user = Users(username=form.username.data, name=form.name.data, email=form.email.data, password_hash=hashed_pw)
+            user = Users(username=form.username.data, name=form.name.data, email=form.email.data,
+                         password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()
         # name = form.name.data
@@ -219,14 +224,11 @@ def delete(id):
         flash("Sorry You Can't Delete This User")
         return redirect(url_for("dashboard"))
 
+
 '''END USER BLOCK'''
 
-
-
-
-
-
 '''CAT BLOCK'''
+
 
 # Add Cats
 @app.route("/add_cat", methods=['GET', 'POST'])
@@ -245,7 +247,11 @@ def add_cat():
                         price=form.price.data, city=form.city.data,
                         contact=form.contact.data, info=form.info.data,
                         poster_id=poster_id, cat_pic=cat_pic)
-
+        else:
+            post = Cats(category=form.category.data, age=abs(form.age.data),
+                        price=form.price.data, city=form.city.data,
+                        contact=form.contact.data, info=form.info.data,
+                        poster_id=poster_id)
             # Clear the form
             # form.category.data = ''
             # form.age.data = ''
@@ -306,24 +312,28 @@ def delete_cat(id):
     id = current_user.id
     if id == cat_to_delete.poster.id or id == 1:
         try:
-            cat_pic = cat_to_delete.cat_pic
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
-            db.session.delete(cat_to_delete)
-
-            db.session.commit()
-            flash("Cat was deleted")
-            cats = Cats.query.order_by(desc(Cats.date_posted))
-            return render_template("cats.html", cats=cats)
-
+            try:  # Trying to delete pic & cat
+                cat_pic = cat_to_delete.cat_pic
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
+                db.session.delete(cat_to_delete)
+                db.session.commit()
+                flash("Cat Deleted Successfully")
+                # cats = Cats.query.order_by(desc(Cats.date_posted))
+                return redirect(url_for("cats"))
+            except:  # If fails to find the picture - delete the cat
+                db.session.delete(cat_to_delete)
+                db.session.commit()
+                flash("Cat Deleted Successfully")
+                # cats = Cats.query.order_by(desc(Cats.date_posted))
+                return redirect(url_for("cats"))
         except:
             flash('Some Problem While Deleting Cat')
             cats = Cats.query.order_by(Cats.date_posted)
             return render_template(desc('cats.html', cats=cats))
     else:
-        flash("You Aren't Authorized To Delete That Cat!" )
+        flash("You Aren't Authorized To Delete That Cat!")
         cats = Cats.query.order_by(desc(Cats.date_posted))
         return render_template('cats.html', cats=cats)
-
 
 
 # List of Cats
@@ -340,11 +350,11 @@ def cat(id):
     cat = Cats.query.get_or_404(id)
     return render_template("cat.html", cat=cat)
 
+
 '''END CAT BLOCK'''
 
-
-
 '''CATEGORY BLOCK'''
+
 
 # Add Breed
 @app.route('/breed/add', methods=['GET', 'POST'])
@@ -372,7 +382,8 @@ def add_breed():
         flash('User added successfully!')
         return redirect(url_for("breeds"))
     category = Category.query.order_by(Category.name)
-    return render_template('add_breed.html', form=form, name=name, wool=wool, origin=origin, about=about, category=category)
+    return render_template('add_breed.html', form=form, name=name, wool=wool, origin=origin, about=about,
+                           category=category)
 
 
 # Edit category(Breed)
@@ -404,8 +415,8 @@ def breeds():
     category = Category.query.order_by(Category.name)
     return render_template('breeds.html', category=category)
 
-'''END CATEGORY BLOCK'''
 
+'''END CATEGORY BLOCK'''
 
 
 # # INDEX PAGE
@@ -429,6 +440,7 @@ def page_not_found(e):
 def page_not_found(e):
     return render_template("500.html"), 500
 
+
 # NAME PAGE
 @app.route("/name", methods=['GET', 'POST'])
 def name():
@@ -442,15 +454,15 @@ def name():
     return render_template("name.html", name=name, form=form)
 
 
-
 '''FORMS'''
+
 
 class SearchForm(FlaskForm):
     searched = StringField('searched', validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 
-#Create login from
+# Create login from
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -466,7 +478,7 @@ class CatForm(FlaskForm):
     price = IntegerField('Price')
     city = StringField('City', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
-    info = StringField('Info', validators=[DataRequired()], widget=TextArea())
+    info = StringField('Info', widget=TextArea())
     submit = SubmitField("Submit")
     category = QuerySelectField(query_factory=enabled_categories, validators=[DataRequired()],
                                 allow_blank=False)
@@ -479,7 +491,8 @@ class UserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     name = StringField("Your Name", validators=[DataRequired()])
     email = StringField("Your Email", validators=[DataRequired()])
-    password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash2', message='Passwords Must Match!')])
+    password_hash = PasswordField('Password', validators=[DataRequired(),
+                                                          EqualTo('password_hash2', message='Passwords Must Match!')])
     password_hash2 = PasswordField('Confirm', validators=[DataRequired()])
     profile_pic = FileField('Profile Picture')
     submit = SubmitField("Submit")
@@ -503,10 +516,11 @@ class CategoryForm(FlaskForm):
     origin = StringField("Origin")
     submit = SubmitField("Submit")
 
+
 '''END FORMS'''
 
-
 '''MODELS'''
+
 
 # Create model
 class Cats(db.Model):
@@ -583,8 +597,9 @@ class Users(db.Model, UserMixin):
     # create  a string
     def __repr__(self):
         return '<Name %r>' % self.name
-'''END MODELS'''
 
+
+'''END MODELS'''
 
 # if __name__ == "__main__":
 #     app.run(host="localhost", port=5000, debug=True)

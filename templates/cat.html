@@ -1,13 +1,11 @@
 {% extends "base.html" %}
-
 {% block content %}
         <div class="container border rounded">
 
-
     {% if cat.cat_pic %}
-    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200" align="right">
+    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200">
     {% else %}
-        <img src="{{ url_for('static', filename='images/wanted.jpg')}}" width="200" align="right">
+        <img src="{{ url_for('static', filename='images/wanted.jpg')}}" width="200">
 
     {% endif %}
         {{ cat.cat_pic }}<br>

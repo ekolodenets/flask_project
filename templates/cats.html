@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row bg-light mb-3">
+<div class="row bg-light mb-1">
 
 <!-- Side Bar Section -->
-    <div class=" col-xl-2 col-lg-3 col-md-4 col-sm-5 col-xs-4 bg-light pt-2" style=" background-color: white">
-        <div class="text-center"><h2>Breed List</h2></div>
-        <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action">Breed_1</a>
-            <a href="#" class="list-group-item list-group-item-action">Breed_2</a>
+    <div class=" col-xl-2 col-lg-3 col-md-4 col-sm-5 col-xs-4 bg-light pl-4" style=" background-color: white">
+        <div class="text-center pb-2"><h2>Breed List</h2></div>
+        <div class="list-group shadow rounded">
+  {% for breed in category %}
+  <a href="#" class="list-group-item list-group-item-action">{{ breed.name }}</a>
+{% endfor %}
+</div>
 
 {% for massage in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -16,16 +18,16 @@
     </div>
 {% endfor %}
 
-        </div>
+
     </div>
 <!-- End Side Bar Section -->
 
 <!-- Content Section -->
-    <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-light g-4 px-4" style=" background-color: #fefefe">
+    <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-light  " style=" background-color: #fefefe">
         <div class="container bg-light">
             <header class="section-header bg-light text-center pb-5">
                 <h1>FLUFFY HAPPINESS</h1>
-                <p>You will find a collection of pet fuzzies offers here</p>
+                <p>Here you will find a big collection of fluffy pets offers </p>
             </header>
 
             <div class="row row-cols-1 row-cols-xs-1 row-cols-md-2 row-cols-xl-3 g-5 ">
@@ -35,9 +37,9 @@
     <div class="card h-100 border-gray shadow">
 
         {% if cat.cat_pic %}
-    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" class="card-img  rounded">
+    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" class="card-img  rounded" alt="">
     {% else %}
-        <img src="{{ url_for('static', filename='images/wanted.jpg')}}"  class="card-img rounded">
+        <img src="{{ url_for('static', filename='images/wanted.jpg')}}"  class="card-img rounded" alt="">
     {% endif %}
 
       <div class="card-body p-lg-0">

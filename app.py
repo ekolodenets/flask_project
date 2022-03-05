@@ -190,15 +190,10 @@ def update(id):
     if request.method == 'POST':
         name_to_update.name = request.form['name']
         name_to_update.email = request.form['email']
-        # name_to_update.favourite_color = request.form['favourite_color']
         name_to_update.username = request.form['username']
-        try:
-            db.session.commit()
-            flash('User updated successfully')
-            return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
-        except:
-            flash('User updated successfully')
-            return render_template('update.html', form=form, name_to_update=name_to_update)
+        db.session.commit()
+        flash('User updated successfully')
+        return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
     else:
         return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
 
@@ -227,14 +222,16 @@ def delete(id):
 
 '''END USER BLOCK'''
 
-'''CAT BLOCK'''
 
+
+'''CAT BLOCK'''
 
 # Add Cats
 @app.route("/add_cat", methods=['GET', 'POST'])
 @login_required
 def add_cat():
     form = CatForm()
+    info = ' '
     if form.validate_on_submit():
         poster_id = current_user.id
         if request.files["cat_pic"] and allowed_file(request.files["cat_pic"].filename):
@@ -243,30 +240,26 @@ def add_cat():
             cat_pic = 'cat_' + datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + '.jpeg'
             saver = request.files["cat_pic"]
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
+
             post = Cats(category=form.category.data, age=abs(form.age.data),
                         price=form.price.data, city=form.city.data,
                         contact=form.contact.data, info=form.info.data,
                         poster_id=poster_id, cat_pic=cat_pic)
+            db.session.add(post)
+            db.session.commit()
         else:
             post = Cats(category=form.category.data, age=abs(form.age.data),
                         price=form.price.data, city=form.city.data,
                         contact=form.contact.data, info=form.info.data,
                         poster_id=poster_id)
-            # Clear the form
-            # form.category.data = ''
-            # form.age.data = ''
-            # form.price.data = ''
-            # form.city.data = ''
-            # form.contact.data = ''
-            # form.info.data = ''
 
             # Add post to DB
             db.session.add(post)
             db.session.commit()
 
-            # Message
-            flash("Cat added successfully!")
-            return redirect(url_for("cats"))
+        # Message
+        flash("Cat added successfully!")
+        return redirect(url_for("cats"))
     # Redirect
     return render_template("add_cat.html", form=form)
 
@@ -318,13 +311,13 @@ def delete_cat(id):
                 db.session.delete(cat_to_delete)
                 db.session.commit()
                 flash("Cat Deleted Successfully")
-                # cats = Cats.query.order_by(desc(Cats.date_posted))
+
                 return redirect(url_for("cats"))
+
             except:  # If fails to find the picture - delete the cat
                 db.session.delete(cat_to_delete)
                 db.session.commit()
                 flash("Cat Deleted Successfully")
-                # cats = Cats.query.order_by(desc(Cats.date_posted))
                 return redirect(url_for("cats"))
         except:
             flash('Some Problem While Deleting Cat')
@@ -341,7 +334,8 @@ def delete_cat(id):
 def cats():
     # grab all the cats from the data base
     cats = Cats.query.order_by(desc(Cats.date_posted))
-    return render_template("cats.html", cats=cats)
+    category = Category.query.order_by(Category.name)
+    return render_template("cats.html", cats=cats, category=category)
 
 
 # Cat's Page
@@ -349,6 +343,7 @@ def cats():
 def cat(id):
     cat = Cats.query.get_or_404(id)
     return render_template("cat.html", cat=cat)
+
 
 
 '''END CAT BLOCK'''
@@ -380,7 +375,7 @@ def add_breed():
         form.origin.data = ''
         form.about.data = ''
         flash('User added successfully!')
-        return redirect(url_for("breeds"))
+        return redirect(url_for("add_breed"))
     category = Category.query.order_by(Category.name)
     return render_template('add_breed.html', form=form, name=name, wool=wool, origin=origin, about=about,
                            category=category)
@@ -417,6 +412,12 @@ def breeds():
 
 
 '''END CATEGORY BLOCK'''
+
+
+@app.route("/about")
+def about():
+    pizza = ['pepperoni', 'Cheese', 'Beefe', 'Pineapple', 35]
+    return render_template('about.html', pizza=pizza)
 
 
 # # INDEX PAGE
@@ -474,7 +475,7 @@ def enabled_categories():
 
 
 class CatForm(FlaskForm):
-    age = IntegerField('Age', validators=[DataRequired()])
+    age = IntegerField('Months', validators=[DataRequired()])
     price = IntegerField('Price')
     city = StringField('City', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])

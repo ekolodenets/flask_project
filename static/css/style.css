@@ -37,8 +37,8 @@ h6 {
 
 /*set table compact*/
 .table {
-   margin: auto;
-   width: 40% !important;
+   /*align-content: center;*/
+   /*width: 40% !important;*/
 }
 
 /*set row table linkable*/

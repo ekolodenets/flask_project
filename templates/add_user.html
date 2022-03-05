@@ -45,13 +45,14 @@
         </form></div></div>
     <h2 class="text-center">5 Last Registered Users</h2>
         <br>
-<div class="d-flex content-middle">
-    <table class="table table-light table-striped table-hover table-sm w-auto">
+
+<div class="d-flex justify-content-center">
+    <table class="table table-light table-striped table-hover table-sm w-auto " style="max-width:600px;">
 <thead>
 <tr>
-    <td>ID</td>
-    <td>NICKNAME</td>
-    <td>NAME</td>
+    <td>Id</td>
+    <td>Nickname</td>
+    <td>Name</td>
 </tr>
 </thead>
 
@@ -69,12 +70,13 @@
                 </tr>
             {% endfor %}
 </table>
-        </div>
+</div>
+
         <br>
     </div>
 {% endblock %}
 
-<a href="{{ url_for('update', id=user_.id)}}">
-
-</a>
+{#<a href="{{ url_for('update', id=user_.id)}}">#}
+{##}
+{#</a>#}
 

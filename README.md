@@ -1,4 +1,4 @@
-# flask project
+# KITTIES
 
 My first project -> [KITTIES](https://flasker3.herokuapp.com/ "KITTIES")
 

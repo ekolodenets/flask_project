@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container ">
 
+    <div class="container ">
         {% for massage in get_flashed_messages() %}
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <strong>{{ massage }}</strong>
@@ -15,30 +15,32 @@
             <div class="d-flex justify-content-center">
                 <div class="shadow p-3 mb-5 bg-body rounded">
                     <form action='/update/{{ name_to_update.id }}' method="post">
-        {{ form.hidden_tag() }}
+                        {{ form.hidden_tag() }}
 
-        {{ form.name.label(class='form-label') }}
-        {{ form.name(class='form-control', value=name_to_update.name) }}
-        {{ form.username.label(class='form-label') }}
-        {{ form.username(class='form-control', value=name_to_update.username) }}
-        {{ form.email.label(class='form-label') }}
-        {{ form.email(class='form-control', value=name_to_update.email) }}
+                        {{ form.name.label(class='form-label') }}
+                        {{ form.name(class='form-control', value=name_to_update.name) }}
+                        {{ form.username.label(class='form-label') }}
+                        {{ form.username(class='form-control', value=name_to_update.username) }}
+                        {{ form.email.label(class='form-label') }}
+                        {{ form.email(class='form-control', value=name_to_update.email) }}
                         <br>
                         <div class="col text-center">
                             {{ form.submit(class='btn btn-outline-secondary btn-sm') }}
+
                             {% if current_user.id == 1 %}
                                 <a class="btn btn-danger btn-sm" data-bs-toggle="collapse" href="#warningbeforedelete" role="button" aria-expanded="false" aria-controls="collapseExample">Delete Profile
                                 </a>
                                 <div class="collapse" id="warningbeforedelete">
                                     <div class="card card-body text-center ">
-                                        <strong>Are You Sure You Want <br>To Delete This Profile?</strong>
+                                        <strong>Delete This Profile?</strong>
                                         <br>
                                         <p>
                                             <a href="{{ url_for('delete', id=id)}}" class="btn btn-danger btn-sm ">Yes! Delete!</a>
                                         </p>
                                     </div>
                                 </div>
-                            {%  endif %}
+                            {% endif %}
+
                         </div>
                     </form>
                 </div>

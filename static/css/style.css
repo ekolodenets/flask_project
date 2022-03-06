@@ -83,7 +83,7 @@ Bootstrap 4 breakpoints
 */
 @media (min-width: 400px) {
     h5 {font-size:0.8rem;}
-    a.btn {font-size:0.8rem;}
+    /*a.btn {font-size:0.8rem;}*/
     dt {font-size:0.8rem;} /*1rem = 16px*/
     dd {font-size:0.8rem;} /*1rem = 16px*/
 }
@@ -91,21 +91,24 @@ Bootstrap 4 breakpoints
 /* Small devices (landscape phones, 544px and up) */
 @media (min-width: 544px) {
     h5 {font-size:0.8rem;}
-    a.btn {font-size:0.8rem;}
+    /*a.btn {font-size:0.8rem;}*/
     dt {font-size:0.8rem;} /*1rem = 16px*/
     dd {font-size:0.8rem;} /*1rem = 16px*/
 }
 
 /* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
 @media (min-width: 768px) {
+    /*input {font-size:0.8rem;}*/
     h5 {font-size:1rem;}
-    a.btn {font-size:1rem;}
+    /*a.btn {font-size:0.8rem;}*/
     dt {font-size:1rem;} /*1rem = 16px*/
     dd {font-size:1rem;} /*1rem = 16px*/
 }
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
+    /*input {font-size:1rem;}*/
+    /*a.btn {font-size:1rem;}*/
   dd {font-size:1rem;} /*1rem = 16px*/
 }
 

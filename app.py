@@ -120,7 +120,6 @@ def dashboard():
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
-        # name_to_update.favourite_color = request.form["favourite_color"]
         name_to_update.username = request.form["username"]
         # check for profile_pic
         if request.files["profile_pic"] and allowed_file(request.files["profile_pic"].filename):
@@ -151,11 +150,11 @@ def dashboard():
     else:
         return render_template("dashboard.html", form=form, name_to_update=name_to_update, id=id)
 
-
 '''END ADMINISTRATION BLOCK'''
 
-'''USER BLOCK'''
 
+
+'''USER BLOCK'''
 
 # Add User
 @app.route('/user/add', methods=['GET', 'POST'])
@@ -301,7 +300,7 @@ def edit_cat(id):
         form.city.data = cat.city
         form.contact.data = cat.contact
         form.info.data = cat.info
-        return render_template("edit_cat.html", form=form)
+        return render_template("edit_cat.html", form=form, cat=cat)
     else:
         flash("You Aren't Authorized To Edit This")
         cats = Cats.query.order_by(desc(Cats.date_posted))
@@ -360,16 +359,17 @@ def cat(id):
     m_t = divmod(x[0], 60)
     h_t = divmod(m_t[0], 24)
     d, h = int(h_t[0]), int(h_t[1])
-    passed = f'{d} d {h} h ago'
-    print(passed)
+    if d == 0:
+        passed = f'{h} h ago'
+    else:
+        passed = f'{d} d {h} h ago'
     return render_template("cat.html", cat=cat, passed=passed)
-
-
 
 '''END CAT BLOCK'''
 
-'''CATEGORY BLOCK'''
 
+
+'''CATEGORY BLOCK'''
 
 # Add Breed
 @app.route('/breed/add', methods=['GET', 'POST'])
@@ -430,14 +430,13 @@ def breeds():
     category = Category.query.order_by(Category.name)
     return render_template('breeds.html', category=category)
 
-
 '''END CATEGORY BLOCK'''
+
 
 
 @app.route("/about")
 def about():
-    pizza = ['pepperoni', 'Cheese', 'Beefe', 'Pineapple', 35]
-    return render_template('about.html', pizza=pizza)
+    return render_template('about.html')
 
 
 # # INDEX PAGE
@@ -475,8 +474,8 @@ def name():
     return render_template("name.html", name=name, form=form)
 
 
-'''FORMS'''
 
+'''FORMS'''
 
 class SearchForm(FlaskForm):
     searched = StringField('searched', validators=[DataRequired()])
@@ -496,7 +495,7 @@ def enabled_categories():
 
 class CatForm(FlaskForm):
     age = IntegerField('Months', validators=[DataRequired()])
-    price = IntegerField('Price')
+    price = IntegerField('Price, $')
     city = StringField('City', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
     info = StringField('Info', widget=TextArea())
@@ -505,7 +504,7 @@ class CatForm(FlaskForm):
                                 allow_blank=False)
     cat_pic = FileField('Cat Picture')
 
-    # def validate_price
+
 
 
 class UserForm(FlaskForm):
@@ -537,16 +536,14 @@ class CategoryForm(FlaskForm):
     origin = StringField("Origin")
     submit = SubmitField("Submit")
 
-
 '''END FORMS'''
 
-'''MODELS'''
 
+'''MODELS'''
 
 # Create model
 class Cats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # category = db.Column(db.String(255))
     age = db.Column(db.Integer)
     price = db.Column(db.Integer)
     city = db.Column(db.String(20))
@@ -597,7 +594,6 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
-    # favourite_color = db.Column(db.String(120))
     date_added = db.Column(db.DateTime, default=datetime.datetime.now)
     password_hash = db.Column(db.String(128))
     profile_pic = db.Column(db.String(), nullable=True)
@@ -622,5 +618,5 @@ class Users(db.Model, UserMixin):
 
 '''END MODELS'''
 
-# if __name__ == "__main__":
-#     app.run(host="localhost", port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(host="localhost", port=5000, debug=True)

@@ -5,8 +5,8 @@
         <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-gray">
 {#            <header class="section-header mt-4 text-center"><h3>{{cat.category}}</h3></header>#}
 <!--картинка-->
-        <div class="row justify-content-center ">
-            <div class="card border-light bg-gray" style="width: 25rem; padding: 0;">
+        <div class="row justify-content-center">
+            <div class="card border-light bg-gray shadow" style="width: 25rem; padding: 0;">
                 {% if cat.cat_pic %}
                     <img class="card-img-top" src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" width="200">
                 {% else %}
@@ -15,8 +15,8 @@
             </div>
         </div>
         <!--картинка-->
-            <div class="row align-items-center justify-content-center">
-                <div class="row bg-dark" style="width: 25rem; padding: 0;">
+            <div class="row align-items-center justify-content-center ">
+                <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col ">
                         <div class="p-2 text-white text-right bg-dark text-transform"><b>Breed</b>
                         </div>
@@ -28,7 +28,7 @@
             </div>
 
             <div class="row align-items-center justify-content-center">
-                <div class="row bg-dark" style="width: 25rem; padding: 0;">
+                <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-right bg-dark"><b>Age</b></div>
                     </div>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="row align-items-center justify-content-center">
-                <div class="row mx-md-n1 bg-dark" style="width: 25rem; padding: 0;">
+                <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-right bg-dark"><b>Cost</b>
                         </div>
@@ -49,7 +49,7 @@
                             {% if cat.price == 0 %}
                                 <p class="text-left">F R E E</p>
                             {% else %}
-                                <p class="text-left">{{cat.price}} р.</p>
+                                <p class="text-left">${{cat.price}}</p>
                             {% endif %}
                         </div>
                     </div>
@@ -57,7 +57,7 @@
             </div>
 
             <div class="row align-items-center justify-content-center">
-                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-right bg-dark"><b>City</b></div>
                     </div>
@@ -68,7 +68,7 @@
             </div>
 
             <div class="row align-items-center justify-content-center">
-                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-right bg-dark"><b>Contacts</b></div>
                     </div>
@@ -78,19 +78,21 @@
                 </div>
             </div>
 
-            <div class="row align-items-center justify-content-center">
-                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
-                    <div class="col">
-                        <div class="p-2 text-white text-right bg-dark"><b>Information</b></div>
-                    </div>
-                    <div class="col">
-                        <div class="p-2 text-white bg-dark">{{ cat.info }}</div>
+            {% if cat.info %}
+                <div class="row align-items-center justify-content-center">
+                    <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
+                        <div class="col">
+                            <div class="p-2 text-white text-right bg-dark"><b>Information</b></div>
+                        </div>
+                        <div class="col">
+                            <div class="p-2 text-white bg-dark">{{ cat.info }}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
 
-        <div class="row align-items-center justify-content-center">
-                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+            <div class="row align-items-center justify-content-center">
+                <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-right bg-dark"><b>Posted by</b></div>
                     </div>
@@ -101,7 +103,7 @@
             </div>
 
             <div class="row align-items-center justify-content-center">
-                <div class="row mx-md-n1  bg-dark" style="max-width: 25rem; padding: 0;">
+                <div class="row bg-dark shadow" style="max-width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-right bg-dark"><b>Added</b></div>
                     </div>
@@ -112,7 +114,7 @@
             </div>
 
             <div class="row align-items-center justify-content-center">
-                <div class="row mx-md-n1  bg-dark" style="width: 25rem; padding: 0;">
+                <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-center bg-dark">
                             <b>

@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
-
 {% block content %}
+
     <div class="container">
+        <h1 class="text-center">Login</h1>
+        <br>
+        <div class="d-flex justify-content-center">
+            <div class="shadow p-3 mb-5 bg-body rounded">
+                <form method="post">
+                    {{ form.hidden_tag() }}
 
-{% for massage in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>{{ massage }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-{% endfor %}
+                    {{ form.username.label(class='form-label') }}
+                    {{ form.username(class='form-control') }}
 
-    <h1 class="text-center">Login</h1>
-    <br><div class="d-flex justify-content-center">
-    <div class="shadow p-3 mb-5 bg-body rounded">
-    <form method="post">
-        {{ form.hidden_tag() }}
+                    {{ form.password.label(class='form-label') }}
+                    {{ form.password(class='form-control') }}
+                    <br>
+                    <div class="col text-center">
+                        {{ form.submit(class='btn btn-outline-secondary') }}</div>
+                </form>
+            </div>
+        </div>
 
-        {{ form.username.label(class='form-label') }}
-        {{ form.username(class='form-control') }}
-
-        {{ form.password.label(class='form-label') }}
-        {{ form.password(class='form-control') }}
-
+        <div class="d-flex justify-content-center">
+            {% for massage in get_flashed_messages() %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>{{ massage }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
 
         <br>
-        <div class="col text-center">
-        {{ form.submit(class='btn btn-outline-secondary') }}</div>
-    </form></div></div>
-    <br>
     </div>
 {% endblock %}

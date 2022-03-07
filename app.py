@@ -457,7 +457,6 @@ def breeds():
 
 # Edit category(Breed)
 @app.route("/category/<int:id>", methods=['GET', 'POST'])
-@login_required
 def filter_category(id):
     category2 = Category.query.get_or_404(id)
     category = Category.query.order_by(Category.name)

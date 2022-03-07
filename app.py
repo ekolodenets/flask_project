@@ -351,17 +351,24 @@ def cats():
     # grab all the cats from the data base
     cats = Cats.query.order_by(desc(Cats.date_posted))
     category = Category.query.order_by(Category.name)
-    alfa = string.ascii_uppercase
-    # for i in category:
-    #     print(i)
-    return render_template("cats.html", cats=cats, category=category, alfa=alfa)
+    # Getting list of existing categories
+    exist = []
+    for i in cats:
+        if str(i.category)[0] not in exist:
+            exist.append(str(i.category)[0])
+
+    return render_template("cats.html", cats=cats, category=category, exist=exist)
 
 
 # Cat's Page
 import datetime
 @app.route("/cat/<int:id>")
 def cat(id):
+
     cat = Cats.query.get_or_404(id)
+    category = Category.query
+
+    #setting time passed
     time = datetime.datetime.now()
     diff = time - cat.date_posted
     x = divmod(diff.total_seconds(), 60)
@@ -372,7 +379,8 @@ def cat(id):
         passed = f'{h} h ago'
     else:
         passed = f'{d} d {h} h ago'
-    return render_template("cat.html", cat=cat, passed=passed)
+
+    return render_template("cat.html", cat=cat, passed=passed, category=category)
 
 '''END CAT BLOCK'''
 
@@ -403,7 +411,7 @@ def add_breed():
         form.wool.data = ''
         form.origin.data = ''
         form.about.data = ''
-        flash('User added successfully!')
+        flash('Breed added successfully!')
         return redirect(url_for("add_breed"))
     category = Category.query.order_by(Category.name)
     return render_template('add_breed.html', form=form, name=name, wool=wool, origin=origin, about=about,
@@ -623,5 +631,5 @@ class Users(db.Model, UserMixin):
 
 '''END MODELS'''
 
-# if __name__ == "__main__":
-#     app.run(host="localhost", port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(host="localhost", port=5000, debug=True)

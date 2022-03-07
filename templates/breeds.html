@@ -14,7 +14,7 @@
          <td class="align-middle">{{ breed.name }}</td>
       <td><a href="{{ url_for('edit_category', id=breed.id) }}" class="btn btn-outline-secondary">Edit</a></td>
       <td class="align-middle text-center">{% if breed.wool %}
-      OK
+          {{ breed.wool }}
       {% else %}
       -
       {% endif %}</td>

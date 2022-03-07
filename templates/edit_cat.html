@@ -2,30 +2,32 @@
 {% block content %}
 
     <div class="container">
-        <h2 class="text-center">Edit {{ cat.poster.name }}'s cat </h2>
-        <br>
-        <div class="d-flex justify-content-center">
-            <div class="shadow p-3 mb-5 bg-body rounded">
-            <form method="post">
-                {{ form.hidden_tag() }}
 
-                {{ form.category.label(class='form-label') }}
-                {{ form.category(class='form-control') }}
-                {{ form.age.label(class='form-label') }}
-                {{ form.age(class='form-control') }}
-                {{ form.price.label(class='form-label') }}
-                {{ form.price(class='form-control') }}
-                {{ form.city.label(class='form-label') }}
-                {{ form.city(class='form-control') }}
-                {{ form.contact.label(class='form-label') }}
-                {{ form.contact(class='form-control', rows='5') }}
-                {{ form.info.label(class='form-label') }}
-                {{ form.info(class='form-control') }}
-                <br>
-                <div class="col text-center">
+        <h2 class="text-center mb-2">Edit {{ cat.poster.name }}'s cat </h2>
+        <div class="d-flex justify-content-center">
+            <div class="shadow p-3 mb-3 bg-body rounded">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+
+                    {{ form.category.label(class='form-label') }}
+                    {{ form.category(class='form-control') }}
+                    {{ form.age.label(class='form-label') }}
+                    {{ form.age(class='form-control') }}
+                    {{ form.price.label(class='form-label') }}
+                    {{ form.price(class='form-control') }}
+                    {{ form.city.label(class='form-label') }}
+                    {{ form.city(class='form-control') }}
+                    {{ form.contact.label(class='form-label') }}
+                    {{ form.contact(class='form-control', rows='5') }}
+                    {{ form.info.label(class='form-label') }}
+                    {{ form.info(class='form-control') }}
+                    <br>
+                    <div class="col text-center">
                     {{ form.submit(class='btn btn-secondary btn-sm') }}
-                    <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary btn-sm">Back</a></div>
-            </form></div>
+                        <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary btn-sm">Back</a>
+                    </div>
+                </form>
+            </div>
             <br>
         </div>
 
@@ -37,5 +39,4 @@
         {% endfor %}
 
     </div>
-
 {% endblock %}

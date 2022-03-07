@@ -15,6 +15,7 @@ from flask_wtf.file import FileField, FileRequired
 from wtforms_sqlalchemy.fields import QuerySelectField
 from sqlalchemy import desc
 from datetime import datetime, date, time
+import string
 
 app = Flask(__name__)
 
@@ -164,11 +165,16 @@ def add_user():
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
-            hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
-            user = Users(username=form.username.data, name=form.name.data, email=form.email.data,
-                         password_hash=hashed_pw)
-            db.session.add(user)
-            db.session.commit()
+            try:
+                hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
+                user = Users(username=form.username.data, name=form.name.data, email=form.email.data,
+                             password_hash=hashed_pw)
+                db.session.add(user)
+                db.session.commit()
+            except:
+                flash("Email or User is Already in Base")
+                flask1 = Users.query.order_by(desc(Users.date_added))
+                return render_template("add_user.html", form=form, name=name, flask1=flask1)
         form.username.data = ''
         form.name.data = ''
         form.email.data = ''
@@ -203,7 +209,7 @@ def update(id):
 @app.route('/delete/<int:id>')
 @login_required
 def delete(id):
-    if id == current_user.id or current_user.id == 1:
+    if current_user.id == 1:
         name = None
         form = UserForm()
         user_to_delete = Users.query.get_or_404(id)
@@ -345,7 +351,10 @@ def cats():
     # grab all the cats from the data base
     cats = Cats.query.order_by(desc(Cats.date_posted))
     category = Category.query.order_by(Category.name)
-    return render_template("cats.html", cats=cats, category=category)
+    alfa = string.ascii_uppercase
+    # for i in category:
+    #     print(i)
+    return render_template("cats.html", cats=cats, category=category, alfa=alfa)
 
 
 # Cat's Page
@@ -411,6 +420,7 @@ def edit_category(id):
         category.name = form.name.data
         category.wool = form.wool.data
         category.origin = form.origin.data
+        category.about = form.about.data
 
         # update DB
         db.session.add(category)
@@ -420,8 +430,8 @@ def edit_category(id):
     form.name.data = category.name
     form.wool.data = category.wool
     form.origin.data = category.origin
-
-    return render_template("edit_breed.html", form=form)
+    form.about.data = category.about
+    return render_template("edit_breed.html", form=form )
 
 
 # List of Breeds
@@ -444,11 +454,6 @@ def about():
 # def index():
 #     pizza = ['pepperoni', 'Cheese', 'Beefe', 'Pineapple', 35]
 #     return render_template('index.html', pizza=pizza)
-
-
-# @app.route("/user/<name>")
-# def user(name):
-#     return render_template("user.html", user_name=name)
 
 
 @app.errorhandler(404)
@@ -515,7 +520,7 @@ class UserForm(FlaskForm):
                                                           EqualTo('password_hash2', message='Passwords Must Match!')])
     password_hash2 = PasswordField('Confirm', validators=[DataRequired()])
     profile_pic = FileField('Profile Picture')
-    submit = SubmitField("Submit")
+    submit = SubmitField("Sign Up")
 
 
 class PasswordForm(FlaskForm):
@@ -618,5 +623,5 @@ class Users(db.Model, UserMixin):
 
 '''END MODELS'''
 
-if __name__ == "__main__":
-    app.run(host="localhost", port=5000, debug=True)
+# if __name__ == "__main__":
+#     app.run(host="localhost", port=5000, debug=True)

@@ -5,19 +5,46 @@
 <!-- Side Bar Section -->
     <div class=" col-xl-2 col-lg-3 col-md-4 col-sm-5 col-xs-4 bg-light pl-4" style=" background-color: white">
         <div class="text-center pb-2"><h2>Breed List</h2></div>
-        <div class="list-group shadow rounded">
-  {% for breed in category %}
-  <a href="#" class="list-group-item list-group-item-action">{{ breed.name }}</a>
-{% endfor %}
-</div>
+        <div class="accordion" id="accordionExample">
 
-{% for massage in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>{{ massage }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-{% endfor %}
+            {% for i in alfa %}
 
+                <div class="accordion-item ">
+                    <h5 class="accordion-header"  id="heading{{ i }}">
+                        <div class="collapsed p-1 text-center" role=button data-bs-toggle="collapse" data-bs-target="#collapse{{ i }}" aria-expanded="false" aria-controls="collapse{{ i }}">
+                            {{ i }}
+                        </div>
+                    </h5>
+                    <div id="collapse{{ i }}" class="accordion-collapse collapse" aria-labelledby="heading{{ i }}" data-bs-parent="#accordionExample">
+                        <div class="accordion-body p-0">
+
+                            <div class="list-group list-group-flush">
+                                {% for breed in category %}
+                                    {% if breed.name[0] == i %}
+                                        <button type="button" class="list-group-item list-group-item-action px-2">{{ breed.name }}</button>
+                                    {% else %}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            {%  endfor %}
+
+
+
+
+
+        </div>
+
+        {% for massage in get_flashed_messages() %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>{{ massage }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
 
     </div>
 <!-- End Side Bar Section -->
@@ -33,45 +60,41 @@
             <div class="row row-cols-1 row-cols-xs-1 row-cols-md-2 row-cols-xl-3 g-5 ">
 
                 {% for cat in cats %}
-<div class="col">
-    <div class="card h-100 border-gray shadow">
+                    <div class="col">
+                        <div class="card h-100 border-gray shadow">
 
-        {% if cat.cat_pic %}
-    <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" class="card-img  rounded" alt="">
-    {% else %}
-        <img src="{{ url_for('static', filename='images/wanted.jpg')}}"  class="card-img rounded" alt="">
-    {% endif %}
+                            {% if cat.cat_pic %}
+                                <img src="{{ url_for('static', filename='images/' + cat.cat_pic)}}" class="card-img  rounded" alt="">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/wanted.jpg')}}"  class="card-img rounded" alt="">
+                            {% endif %}
 
-      <div class="card-body p-lg-0">
-        <h5 class="card-title text-center">
-<strong>{{ cat.category }} from {{ cat.city }}</strong>
+                            <div class="card-body p-lg-0">
+                                <h5 class="card-title text-center">
+                                    <strong>{{ cat.category }} from {{ cat.city }}</strong>
 
-        </h5>
-
-
-        <p class="card-text text-center">
-                                {{ cat.age }} months</p>
-          <p class="text-center">
-              {% if cat.price == 0 %}
-                  <p class="text free text-center"><strong>FREE</strong>
-                {% else %}
-                  <p class="text-center">
-                 <strong> ${{ cat.price }} </strong>
-              {% endif %}
-          </p>
+                                </h5>
 
 
-{#                                Owner: {{ cat.poster.name }}#}
-{#                                Contact: {{ cat.contact }}#}
+                                <p class="card-text text-center">
+                                    {{ cat.age }} months</p>
+                                <p class="text-center">
+                                    {% if cat.price == 0 %}
+                                        <p class="text free text-center"><strong>FREE</strong>
+                                            {% else %}
+                                        <p class="text-center">
+                                        <strong> ${{ cat.price }} </strong>
+                                    {% endif %}
+                                    </p>
 
-          <p class="text-center pt-2 pb-1"> <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-secondary btn-sm text-light">V I E W</a></p>
-      </div>
+                                <p class="text-center pt-2 pb-1"> <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-secondary btn-sm text-light">V I E W</a></p>
+                            </div>
 
-      <div class="card-footer bg-white text-center">
-        <small class="text-muted"><strong>Added:</strong> {{ cat.date_posted.strftime('%Y.%m.%d %H:%m') }}</small>
-      </div>
-    </div>
-  </div>
+                            <div class="card-footer bg-white text-center">
+                                <small class="text-muted"><strong>Added:</strong> {{ cat.date_posted.strftime('%Y.%m.%d %H:%m') }}</small>
+                            </div>
+                        </div>
+                    </div>
 
 
 {#        <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-outline-secondary">View cat</a>#}
@@ -86,7 +109,7 @@
 
 
 
-    {% endfor %}
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -95,10 +118,3 @@
 
 </div>
 {% endblock %}
-
-
-
-
-
-
-<!-- One card -->

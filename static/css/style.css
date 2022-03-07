@@ -1,6 +1,6 @@
 
 body {
-  background: #f5f8fd;
+  background: #f8f9fa;
   color: #444;
   font-family: "Montserrat", sans-serif;
 }
@@ -26,6 +26,12 @@ h6 {
   color: #20c997;
 }
 
+button.clear {
+    background: none;
+    border: none;
+    display: block;
+
+}
 /*set images cover cards */
 .card-img {
   max-width: 400px;

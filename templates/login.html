@@ -2,10 +2,10 @@
 {% block content %}
 
     <div class="container">
-        <h1 class="text-center">Login</h1>
-        <br>
+
+        <h1 class="text-center mb-2">Login</h1>
         <div class="d-flex justify-content-center">
-            <div class="shadow p-3 mb-5 bg-body rounded">
+            <div class="shadow p-3 mb-3 bg-body rounded">
                 <form method="post">
                     {{ form.hidden_tag() }}
 
@@ -16,7 +16,8 @@
                     {{ form.password(class='form-control') }}
                     <br>
                     <div class="col text-center">
-                        {{ form.submit(class='btn btn-outline-secondary') }}</div>
+                        <button class="btn btn-outline-secondary btn-sm" type="submit">Sign In</button>
+                    </div>
                 </form>
             </div>
         </div>

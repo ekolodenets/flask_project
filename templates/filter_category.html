@@ -55,14 +55,30 @@
 <!-- Content Section -->
     <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-light  " style=" background-color: #fefefe">
         <div class="container bg-light">
-            <header class="section-header bg-light text-center pb-5">
-                <h1>FLUFFY HAPPINESS</h1>
-                <p>Here you will find a big collection of fluffy pets offers </p>
-            </header>
 
+        <div class="d-flex justify-content-center">
+            <header class="section-header bg-light pb-3 pt-2">
+                {% for i in category %}
+                    {% if i == category2 %}
+
+                        <dl class="row">
+                            <dt class="col-sm-2">Name</dt>
+                            <dd class="col-sm-10 fw-bold">{{category2}}</dd>
+
+                            <dt class="col-sm-2">Wool</dt>
+                            <dd class="col-sm-10 fw-bold">{{i.wool}}</dd>
+
+                            <dt class="col-sm-2">Origin</dt>
+                            <dd class="col-sm-10 fw-bold">{{i.origin}}</dd>
+                        </dl>
+
+                    {% endif %}
+                {% endfor %}
+            </header>
+        </div>
             <div class="row row-cols-1 row-cols-xs-1 row-cols-md-2 row-cols-xl-3 g-5 ">
 
-                {% for cat in cats %}
+                {% for cat in cats if cat.category == category2 %}
                     <div class="col">
                         <div class="card h-100 border-gray shadow">
 

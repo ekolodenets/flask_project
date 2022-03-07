@@ -348,16 +348,22 @@ def delete_cat(id):
 # List of Cats
 @app.route("/")
 def cats():
+
     # grab all the cats from the data base
     cats = Cats.query.order_by(desc(Cats.date_posted))
     category = Category.query.order_by(Category.name)
+    clean_l = []
+    for i in cats:
+        if i.category not in clean_l:
+            clean_l.append(i.category)
+
     # Getting list of existing categories
     exist = []
     for i in cats:
         if str(i.category)[0] not in exist:
             exist.append(str(i.category)[0])
 
-    return render_template("cats.html", cats=cats, category=category, exist=exist)
+    return render_template("cats.html", cats=cats, category=category, exist=exist, clean_l=clean_l)
 
 
 # Cat's Page
@@ -447,6 +453,31 @@ def edit_category(id):
 def breeds():
     category = Category.query.order_by(Category.name)
     return render_template('breeds.html', category=category)
+
+
+# Edit category(Breed)
+@app.route("/category/<int:id>", methods=['GET', 'POST'])
+@login_required
+def filter_category(id):
+    category2 = Category.query.get_or_404(id)
+    category = Category.query.order_by(Category.name)
+    cats = Cats.query.order_by(desc(Cats.date_posted))
+    # category = Category.query.order_by(Category.name)
+    clean_l = []
+    for i in cats:
+        if i.category not in clean_l:
+            clean_l.append(i.category)
+
+    # Getting list of existing categories
+    exist = []
+    for i in cats:
+        if str(i.category)[0] not in exist:
+            exist.append(str(i.category)[0])
+
+    return render_template("filter_category.html", cats=cats, category=category, exist=exist, clean_l=clean_l, category2=category2)
+
+
+
 
 '''END CATEGORY BLOCK'''
 
@@ -631,5 +662,5 @@ class Users(db.Model, UserMixin):
 
 '''END MODELS'''
 
-# if __name__ == "__main__":
-#     app.run(host="localhost", port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(host="localhost", port=5000, debug=True)

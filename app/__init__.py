@@ -1,10 +1,8 @@
-from flask import Flask, render_template, url_for, flash, redirect
-from flask_login import LoginManager, login_required, logout_user, current_user
+from flask import Flask, render_template, url_for, redirect
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+
 
 app = Flask(__name__)
 

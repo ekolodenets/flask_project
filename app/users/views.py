@@ -1,13 +1,13 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, Blueprint
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import render_template, request, url_for, flash, redirect, Blueprint
+from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
 from sqlalchemy import desc
-from datetime import datetime, date, time
+from datetime import datetime
 
-from app.users.forms import LoginForm, UserForm, NamerForm
+from app.users.forms import UserForm, NamerForm
 from app.models import Users
 from app import db, app
 

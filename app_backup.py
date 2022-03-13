@@ -14,20 +14,23 @@ from wtforms.widgets import TextArea
 from flask_wtf.file import FileField, FileRequired
 from wtforms_sqlalchemy.fields import QuerySelectField
 from sqlalchemy import desc
+from datetime import datetime, date, time
+import string
 
 app = Flask(__name__)
 
 # add database
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 # postgresql DB
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:password@localhost/flask1"
+app.config[
+    "SQLALCHEMY_DATABASE_URI"] = "postgresql://aroxklnqgdwyjo:45e12ea1729c93cbcc740f010aa657cc3ef1acb074c7e4caa3858508e8d73f01@ec2-3-228-222-169.compute-1.amazonaws.com:5432/dcqng4p0da090d"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://postgres:password@localhost/flask1"
 
 # secret key
 app.config['SECRET_KEY'] = "adojaios3ijs2i342f3423ghfgf4145sijgsij63634613613cvbxdg16176s8ssdhs37695fb9dl"
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 UPLOAD_FOLDER = "static/images/"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -41,13 +44,15 @@ login_manager.login_view = "login"
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
-#pass search to navbar
+
+# pass search to navbar
 @app.context_processor
 def base():
     form = SearchForm()
     return dict(form=form)
 
-#search
+
+# search
 # @app.route("/search", methods=['POST'])
 # def search():
 #     form = SearchForm()
@@ -55,20 +60,21 @@ def base():
 #     if form.validate_on_submit():
 #         cat.searched = form.searched.data
 #
-#         cats = cats.filter(Cats.category.like('%' + cat.searched + '%'))
+#         cats = cats.filter(Cats.categories.like('%' + cat.searched + '%'))
 #         cats = cats.order_by(Cats.date_posted).all()
 #
 #         return render_template("search.html", form=form, searched=cat.searched, cats=cats)
 
 '''ADMINISTRATION BLOCK'''
 
+
 # Admin Page
 @app.route("/admin")
 @login_required
 def admin():
     id = current_user.id
-    if id == 5:
-        return render_template('admin.html')
+    if id == 1:
+        return render_template('app/admin/templates/admin.html')
     else:
         flash("Sorry, you are not the Admin")
         return redirect(url_for("dashboard"))
@@ -89,7 +95,7 @@ def login():
                 flash("Wrong password - Try again!")
         else:
             flash("That User Does Not Exist - Try again!")
-    return render_template("login.html", form=form)
+    return render_template("app/users/templates/login.html", form=form)
 
 
 # Create logout page
@@ -97,7 +103,8 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("cats"))
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -114,36 +121,35 @@ def dashboard():
     if request.method == "POST":
         name_to_update.name = request.form["name"]
         name_to_update.email = request.form["email"]
-        # name_to_update.favourite_color = request.form["favourite_color"]
         name_to_update.username = request.form["username"]
-        #check for profile_pic
+        # check for profile_pic
         if request.files["profile_pic"] and allowed_file(request.files["profile_pic"].filename):
             name_to_update.profile_pic = request.files["profile_pic"]
 
-            #grab image name
+            # grab image name
             pic_filename = secure_filename(name_to_update.profile_pic.filename)
-            #set UUID
-            pic_name = str(uuid.uuid1()) + "_" + pic_filename
-            #save that image
+            # set UUID
+            pic_name = 'user_' + str(datetime.datetime.now().date())+'_' + str(uuid.uuid1()) + '.jpeg'
+            # save that image
             saver = request.files["profile_pic"]
-            #change it to a string to save to db
+            # change it to a string to save to db
             name_to_update.profile_pic = pic_name
             try:
                 db.session.commit()
                 saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
 
                 flash("User updated successfully")
-                return render_template("dashboard.html", form=form, name_to_update=name_to_update, id=id)
+                return render_template("app/users/templates/dashboard.html", form=form, name_to_update=name_to_update, id=id)
             except:
                 flash("User updated successfully")
-                return render_template("dashboard.html", form=form, name_to_update=name_to_update)
+                return render_template("app/users/templates/dashboard.html", form=form, name_to_update=name_to_update)
         else:
             db.session.commit()
             flash("User updated successfully")
-            return render_template("dashboard.html", form=form, name_to_update=name_to_update, id=id)
+            return render_template("app/users/templates/dashboard.html", form=form, name_to_update=name_to_update, id=id)
 
     else:
-        return render_template("dashboard.html", form=form, name_to_update=name_to_update, id=id)
+        return render_template("app/users/templates/dashboard.html", form=form, name_to_update=name_to_update, id=id)
 
 '''END ADMINISTRATION BLOCK'''
 
@@ -159,69 +165,78 @@ def add_user():
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
-            hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
-            user = Users(username=form.username.data, name=form.name.data, email=form.email.data, password_hash=hashed_pw)
-            db.session.add(user)
-            db.session.commit()
-        # name = form.name.data
+            try:
+                hashed_pw = generate_password_hash(form.password_hash.data, 'sha256')
+                user = Users(username=form.username.data, name=form.name.data, email=form.email.data,
+                             password_hash=hashed_pw)
+                db.session.add(user)
+                db.session.commit()
+            except:
+                flash("Email or User is Already in Base")
+                flask1 = Users.query.order_by(desc(Users.date_added))
+                return render_template("app/users/templates/add_user.html", form=form, name=name, flask1=flask1)
         form.username.data = ''
         form.name.data = ''
         form.email.data = ''
-        # form.favourite_color.data = ''
         form.password_hash.data = ''
         flash("User added successfully!")
         return redirect(url_for("login"))
     flask1 = Users.query.order_by(desc(Users.date_added))
-    return render_template("add_user.html", form=form, name=name, flask1=flask1)
+    return render_template("app/users/templates/add_user.html", form=form, name=name, flask1=flask1)
 
 
 # Update User
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update(id):
-    form = UserForm()
-    name_to_update = Users.query.get_or_404(id)
-    if request.method == 'POST':
-        name_to_update.name = request.form['name']
-        name_to_update.email = request.form['email']
-        # name_to_update.favourite_color = request.form['favourite_color']
-        name_to_update.username = request.form['username']
-        try:
+    if id == current_user.id or current_user.id == 1:
+        form = UserForm()
+        name_to_update = Users.query.get_or_404(id)
+        if request.method == 'POST':
+            name_to_update.name = request.form['name']
+            name_to_update.email = request.form['email']
+            name_to_update.username = request.form['username']
             db.session.commit()
             flash('User updated successfully')
-            return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
-        except:
-            flash('User updated successfully')
-            return render_template('update.html', form=form, name_to_update=name_to_update)
+            return render_template('app/users/templates/update.html', form=form, name_to_update=name_to_update, id=id)
+        else:
+            return render_template('app/users/templates/update.html', form=form, name_to_update=name_to_update, id=id)
     else:
-        return render_template('update.html', form=form, name_to_update=name_to_update, id=id)
-
+        flash("Sorry You Can't Edit This User")
+        return redirect(url_for("add_user"))
 
 # Delete User
 @app.route('/delete/<int:id>')
 @login_required
 def delete(id):
-    if id == current_user.id:
+    if current_user.id == 1:
         name = None
         form = UserForm()
         user_to_delete = Users.query.get_or_404(id)
         try:
-            db.session.delete(user_to_delete)
-            db.session.commit()
-            flash("User Deleted Successfully. Say 'Good Bye To Him'")
-            flask1 = Users.query.order_by(Users.date_added)
-            return render_template("add_user.html", form=form, name=name, flask1=flask1)
+            try:
+                profile_pic = user_to_delete.profile_pic
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], profile_pic))
+
+                db.session.delete(user_to_delete)
+                db.session.commit()
+                flash("User Deleted Successfully. Say 'Good Bye To Him'")
+                return redirect(url_for("add_user"))
+
+            except:
+                db.session.delete(user_to_delete)
+                db.session.commit()
+                flash("User Deleted Successfully. Say 'Good Bye To Him'")
+                return redirect(url_for("add_user"))
         except:
             flash("We Have Some Problems Here While Deleting User")
-            return render_template("add_user.html")
+            return redirect(url_for("add_user"))
     else:
         flash("Sorry You Can't Delete This User")
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("add_user"))
+
 
 '''END USER BLOCK'''
-
-
-
 
 
 
@@ -232,36 +247,37 @@ def delete(id):
 @login_required
 def add_cat():
     form = CatForm()
+    info = ' '
     if form.validate_on_submit():
         poster_id = current_user.id
         if request.files["cat_pic"] and allowed_file(request.files["cat_pic"].filename):
-            cat_pic = request.files["cat_pic"]
+            # cat_pic = request.files["cat_pic"]
             # pic_filename = secure_filename(cat_pic.filename)
-            cat_pic = datetime.now().strftime('%Y_%m_%d_%H_%M_%S_%f_') + str(uuid.uuid1()) + '.jpeg'
+            cat_pic = 'cat_' + str(datetime.datetime.now().date()) + '_' + str(uuid.uuid1()) + '.jpeg'
             saver = request.files["cat_pic"]
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
-            post = Cats(category=form.category.data, age=form.age.data,
+
+            post = Cats(category=form.category.data, age=abs(form.age.data),
                         price=form.price.data, city=form.city.data,
                         contact=form.contact.data, info=form.info.data,
                         poster_id=poster_id, cat_pic=cat_pic)
-
-            # Clear the form
-            # form.category.data = ''
-            # form.age.data = ''
-            # form.price.data = ''
-            # form.city.data = ''
-            # form.contact.data = ''
-            # form.info.data = ''
+            db.session.add(post)
+            db.session.commit()
+        else:
+            post = Cats(category=form.category.data, age=abs(form.age.data),
+                        price=form.price.data, city=form.city.data,
+                        contact=form.contact.data, info=form.info.data,
+                        poster_id=poster_id)
 
             # Add post to DB
             db.session.add(post)
             db.session.commit()
 
-            # Message
-            flash("Cat added successfully!")
-            return redirect(url_for("cats"))
+        # Message
+        flash("Cat added successfully!")
+        return redirect(url_for("cats"))
     # Redirect
-    return render_template("add_cat.html", form=form)
+    return render_template("app/cats/templates/add_cat.html", form=form)
 
 
 # Edit Cat
@@ -272,8 +288,8 @@ def edit_cat(id):
     form = CatForm()
     if form.validate_on_submit():
         cat.category = form.category.data
-        cat.age = form.age.data
-        cat.price = form.price.data
+        cat.age = abs(form.age.data)
+        cat.price = abs(form.price.data)
         cat.city = form.city.data
         cat.contact = form.contact.data
         cat.info = form.info.data
@@ -290,11 +306,11 @@ def edit_cat(id):
         form.city.data = cat.city
         form.contact.data = cat.contact
         form.info.data = cat.info
-        return render_template("edit_cat.html", form=form)
+        return render_template("app/cats/templates/edit_cat.html", form=form, cat=cat)
     else:
         flash("You Aren't Authorized To Edit This")
-        cats = Cats.query.order_by(Cats.date_posted)
-        return render_template("cats.html", cats=cats)
+        cats = Cats.query.order_by(desc(Cats.date_posted))
+        return render_template("app/cats/templates/cats.html", cats=cats)
 
 
 # Delete Cat
@@ -303,39 +319,74 @@ def edit_cat(id):
 def delete_cat(id):
     cat_to_delete = Cats.query.get_or_404(id)
     id = current_user.id
-    if id == cat_to_delete.poster.id or id == 5:
+    if id == cat_to_delete.poster.id or id == 1:
         try:
-            db.session.delete(cat_to_delete)
-            db.session.commit()
+            try:  # Trying to delete pic & cat
+                cat_pic = cat_to_delete.cat_pic
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], cat_pic))
+                db.session.delete(cat_to_delete)
+                db.session.commit()
+                flash("Cat Deleted Successfully")
 
-            flash("Cat was deleted")
-            cats = Cats.query.order_by(Cats.date_posted)
-            return render_template("cats.html", cats=cats)
+                return redirect(url_for("cats"))
 
+            except:  # If fails to find the picture - delete the cat
+                db.session.delete(cat_to_delete)
+                db.session.commit()
+                flash("Cat Deleted Successfully")
+                return redirect(url_for("cats"))
         except:
             flash('Some Problem While Deleting Cat')
             cats = Cats.query.order_by(Cats.date_posted)
-            return render_template('cats.html', cats=cats)
+            return render_template(desc('cats.html', cats=cats))
     else:
-        flash("You Aren't Authorized To Delete That Cat!" )
-        cats = Cats.query.order_by(Cats.date_posted)
-        return render_template('cats.html', cats=cats)
-
+        flash("You Aren't Authorized To Delete That Cat!")
+        cats = Cats.query.order_by(desc(Cats.date_posted))
+        return render_template('app/cats/templates/cats.html', cats=cats)
 
 
 # List of Cats
-@app.route("/cats")
+@app.route("/")
 def cats():
+
     # grab all the cats from the data base
     cats = Cats.query.order_by(desc(Cats.date_posted))
-    return render_template("cats.html", cats=cats)
+    category = Category.query.order_by(Category.name)
+    clean_l = []
+    for i in cats:
+        if i.category not in clean_l:
+            clean_l.append(i.category)
+
+    # Getting list of existing categories
+    exist = []
+    for i in cats:
+        if str(i.category)[0] not in exist:
+            exist.append(str(i.category)[0])
+
+    return render_template("app/cats/templates/cats.html", cats=cats, category=category, exist=exist, clean_l=clean_l)
 
 
 # Cat's Page
+import datetime
 @app.route("/cat/<int:id>")
 def cat(id):
+
     cat = Cats.query.get_or_404(id)
-    return render_template("cat.html", cat=cat)
+    category = Category.query
+
+    #setting time passed
+    time = datetime.datetime.now()
+    diff = time - cat.date_posted
+    x = divmod(diff.total_seconds(), 60)
+    m_t = divmod(x[0], 60)
+    h_t = divmod(m_t[0], 24)
+    d, h = int(h_t[0]), int(h_t[1])
+    if d == 0:
+        passed = f'{h} h ago'
+    else:
+        passed = f'{d} d {h} h ago'
+
+    return render_template("app/cats/templates/cat.html", cat=cat, passed=passed, category=category)
 
 '''END CAT BLOCK'''
 
@@ -366,13 +417,14 @@ def add_breed():
         form.wool.data = ''
         form.origin.data = ''
         form.about.data = ''
-        flash('User added successfully!')
-        return redirect(url_for("breeds"))
+        flash('Breed added successfully!')
+        return redirect(url_for("add_breed"))
     category = Category.query.order_by(Category.name)
-    return render_template('add_breed.html', form=form, name=name, wool=wool, origin=origin, about=about, category=category)
+    return render_template('app/cats/templates/add_breed.html', form=form, name=name, wool=wool, origin=origin, about=about,
+                           category=category)
 
 
-# Edit category(Breed)
+# Edit categories(Breed)
 @app.route("/category/edit/<int:id>", methods=['GET', 'POST'])
 @login_required
 def edit_category(id):
@@ -382,6 +434,7 @@ def edit_category(id):
         category.name = form.name.data
         category.wool = form.wool.data
         category.origin = form.origin.data
+        category.about = form.about.data
 
         # update DB
         db.session.add(category)
@@ -391,40 +444,65 @@ def edit_category(id):
     form.name.data = category.name
     form.wool.data = category.wool
     form.origin.data = category.origin
-
-    return render_template("edit_breed.html", form=form)
+    form.about.data = category.about
+    return render_template("app/cats/templates/edit_breed.html", form=form)
 
 
 # List of Breeds
 @app.route('/breeds', methods=['GET', 'POST'])
 def breeds():
     category = Category.query.order_by(Category.name)
-    return render_template('breeds.html', category=category)
+    return render_template('app/cats/templates/breeds.html', category=category)
+
+
+# Edit categories(Breed)
+@app.route("/category/<int:id>", methods=['GET', 'POST'])
+def filter_category(id):
+    category2 = Category.query.get_or_404(id)
+    category = Category.query.order_by(Category.name)
+    cats = Cats.query.order_by(desc(Cats.date_posted))
+    # categories = Category.query.order_by(Category.name)
+    clean_l = []
+    for i in cats:
+        if i.category not in clean_l:
+            clean_l.append(i.category)
+
+    # Getting list of existing categories
+    exist = []
+    for i in cats:
+        if str(i.category)[0] not in exist:
+            exist.append(str(i.category)[0])
+
+    return render_template("app/cats/templates/filter_category.html", cats=cats, category=category, exist=exist, clean_l=clean_l, category2=category2)
+
+
+
 
 '''END CATEGORY BLOCK'''
 
 
 
-# INDEX PAGE
-@app.route("/")
-def index():
-    pizza = ['pepperoni', 'Cheese', 'Beefe', 'Pineapple', 35]
-    return render_template('index.html', pizza=pizza)
+@app.route("/about")
+def about():
+    return render_template('app/templates/about.html')
 
 
-@app.route("/user/<name>")
-def user(name):
-    return render_template("user.html", user_name=name)
+# # INDEX PAGE
+# @app.route("/")
+# def index():
+#     pizza = ['pepperoni', 'Cheese', 'Beefe', 'Pineapple', 35]
+#     return render_template('index.html', pizza=pizza)
 
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html"), 404
+    return render_template("app/templates/404.html"), 404
 
 
 @app.errorhandler(500)
 def page_not_found(e):
-    return render_template("500.html"), 500
+    return render_template("app/templates/500.html"), 500
+
 
 # NAME PAGE
 @app.route("/name", methods=['GET', 'POST'])
@@ -436,7 +514,7 @@ def name():
         form.name.date = ''
         flash("Form Submitted Successfully!")
 
-    return render_template("name.html", name=name, form=form)
+    return render_template("app/users/templates/name.html", name=name, form=form)
 
 
 
@@ -447,7 +525,7 @@ class SearchForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-#Create login from
+# Create login from
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -459,25 +537,28 @@ def enabled_categories():
 
 
 class CatForm(FlaskForm):
-    age = IntegerField('Age', validators=[DataRequired()])
-    price = IntegerField('Price', validators=[DataRequired()])
+    age = IntegerField('Months', validators=[DataRequired()])
+    price = IntegerField('Price, $')
     city = StringField('City', validators=[DataRequired()])
     contact = StringField('Contact', validators=[DataRequired()])
-    info = StringField('Info', validators=[DataRequired()], widget=TextArea())
+    info = StringField('Info', widget=TextArea())
     submit = SubmitField("Submit")
     category = QuerySelectField(query_factory=enabled_categories, validators=[DataRequired()],
                                 allow_blank=False)
-    cat_pic = FileField('Profile Picture')
+    cat_pic = FileField('Cat Picture')
+
+
 
 
 class UserForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
-    name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired()])
-    password_hash = PasswordField('Password', validators=[DataRequired(), EqualTo('password_hash2', message='Passwords Must Match!')])
-    password_hash2 = PasswordField('Confirm Password', validators=[DataRequired()])
+    name = StringField("Your Name", validators=[DataRequired()])
+    email = StringField("Your Email", validators=[DataRequired()])
+    password_hash = PasswordField('Password', validators=[DataRequired(),
+                                                          EqualTo('password_hash2', message='Passwords Must Match!')])
+    password_hash2 = PasswordField('Confirm', validators=[DataRequired()])
     profile_pic = FileField('Profile Picture')
-    submit = SubmitField("Submit")
+    submit = SubmitField("Sign Up")
 
 
 class PasswordForm(FlaskForm):
@@ -497,6 +578,7 @@ class CategoryForm(FlaskForm):
     about = StringField("About", widget=TextArea())
     origin = StringField("Origin")
     submit = SubmitField("Submit")
+
 '''END FORMS'''
 
 
@@ -505,24 +587,32 @@ class CategoryForm(FlaskForm):
 # Create model
 class Cats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # category = db.Column(db.String(255))
     age = db.Column(db.Integer)
     price = db.Column(db.Integer)
     city = db.Column(db.String(20))
     contact = db.Column(db.String(255))
     info = db.Column(db.Text)
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    date_posted = db.Column(db.DateTime, default=datetime.datetime.now)
     # ForeignKey to link users
     poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     category = db.relationship('Category', backref=db.backref('cats', lazy='dynamic'))
     cat_pic = db.Column(db.String(), nullable=True)
 
-    # def __init__(self, category):
-    #     self.category = category
-
     def __repr__(self):
         return '<Cats %r>' % self.contact
+
+    # Example of checking input data
+    # class UserRegistrationForm(FlaskForm):
+    #     # ...
+    #     submit = SubmitField(label=('Submit'))
+    #
+    #     def validate_username(self, username):
+    #         excluded_chars = " *?!'^+%&amp;/()=}][{$#"
+    #         for char in self.username.data:
+    #             if char in excluded_chars:
+    #                 raise ValidationError(
+    #                     f"Character {char} is not allowed in username.")
 
 
 class Category(db.Model):
@@ -547,8 +637,7 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
-    # favourite_color = db.Column(db.String(120))
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_added = db.Column(db.DateTime, default=datetime.datetime.now)
     password_hash = db.Column(db.String(128))
     profile_pic = db.Column(db.String(), nullable=True)
     # user can have many Cats
@@ -568,8 +657,9 @@ class Users(db.Model, UserMixin):
     # create  a string
     def __repr__(self):
         return '<Name %r>' % self.name
+
+
 '''END MODELS'''
 
-
-if __name__ == "__main__":
-    app.run(host="localhost", port=5000, debug=True)
+# if __name__ == "__main__":
+#     app.run(host="localhost", port=5000, debug=True)

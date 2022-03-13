@@ -20,7 +20,7 @@
                             <div class="list-group list-group-flush">
                                 {% for breed in category %}
                                         {% if breed.name[0] == i and breed in clean_l %}
-                                            <a href="{{url_for('filter_category', id=breed.id)}}" type="button" class="list-group-item list-group-item-action px-2">{{ breed.name }}</a>
+                                            <a href="{{url_for('categories.filter_category', id=breed.id)}}" type="button" class="list-group-item list-group-item-action px-2">{{ breed.name }}</a>
                                        {% endif %}
                                 {% endfor %}
                             </div>
@@ -91,7 +91,7 @@
                                         <strong> ${{ cat.price }} </strong>
                                     {% endif %}
                                     </p>
-                                <p class="text-center pt-2 pb-1"> <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-secondary btn-sm text-light">V I E W</a></p>
+                                <p class="text-center pt-2 pb-1"> <a href="{{ url_for('cats.cat', id=cat.id) }}" class="btn btn-secondary btn-sm text-light">V I E W</a></p>
                             </div>
 
                             <div class="card-footer bg-white text-center">

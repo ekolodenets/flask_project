@@ -20,7 +20,7 @@
                             <div class="list-group list-group-flush">
                                 {% for breed in category %}
                                     {% if breed.name[0] == i and breed in clean_l %}
-                                        <a href="{{url_for('filter_category', id=breed.id)}}" type="button" class="list-group-item list-group-item-action px-2">{{ breed.name }}</a>
+                                        <a href="{{url_for('categories.filter_category', id=breed.id)}}" type="button" class="list-group-item list-group-item-action px-2">{{ breed.name }}</a>
 
                                     {% endif %}
                                 {% endfor %}
@@ -41,9 +41,7 @@
         {% endfor %}
 
     </div>
-<!-- End Side Bar Section -->
 
-<!-- Content Section -->
     <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-light  " style=" background-color: #fefefe">
         <div class="container bg-light">
             <header class="section-header bg-light text-center pb-5">
@@ -81,7 +79,7 @@
                                     {% endif %}
                                     </p>
 
-                                <p class="text-center pt-2 pb-1"> <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-secondary btn-sm text-light">V I E W</a></p>
+                                <p class="text-center pt-2 pb-1"> <a href="{{ url_for('cats.cat', id=cat.id) }}" class="btn btn-secondary btn-sm text-light">V I E W</a></p>
                             </div>
 
                             <div class="card-footer bg-white text-center">
@@ -90,25 +88,10 @@
                         </div>
                     </div>
 
-
-{#        <a href="{{ url_for('cat', id=cat.id) }}" class="btn btn-outline-secondary">View cat</a>#}
-{#    {% if cat.poster_id == current_user.id or current_user.id == 5 %}#}
-{#        <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>#}
-{#        <a href="{{ url_for('delete_cat', id=cat.id) }}" class="btn btn-outline-danger">Delete</a>#}
-{#    {% endif %}#}
-{#</div>#}
-
-
-
-
-
-
                 {% endfor %}
             </div>
         </div>
     </div>
-<!-- End Content Section -->
-
 
 </div>
 {% endblock %}

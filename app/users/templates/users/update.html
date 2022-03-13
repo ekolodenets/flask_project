@@ -14,7 +14,7 @@
             <h2 class="text-center mb-2">Update user {{ name_to_update.name }}</h2>
             <div class="d-flex justify-content-center">
                 <div class="shadow p-3 mb-3 bg-body rounded">
-                    <form action='/update/{{ name_to_update.id }}' method="post">
+                    <form action='/users/update/{{ name_to_update.id }}' method="post">
                         {{ form.hidden_tag() }}
 
                         {{ form.name.label(class='form-label') }}
@@ -36,7 +36,7 @@
                                         <strong>Delete This Profile?</strong>
                                         <br>
                                         <p>
-                                            <a href="{{ url_for('delete', id=id)}}" class="btn btn-danger btn-sm ">Yes! Delete!</a>
+                                            <a href="{{ url_for('users.delete', id=id)}}" class="btn btn-danger btn-sm ">Yes! Delete!</a>
                                         </p>
                                     </div>
                                 </div>

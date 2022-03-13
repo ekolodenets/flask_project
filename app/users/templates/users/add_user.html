@@ -56,20 +56,20 @@
                 {% for user_ in flask1[:5] %}
                     <tr>
                         <td>
-                            <a href="{{ url_for('update', id=user_.id)}}">{{ user_.id }}.</a>
+                            <a href="{{ url_for('users.update', id=user_.id)}}">{{ user_.id }}.</a>
                         </td>
                         <td>
-                            <a href="{{ url_for('update', id=user_.id)}}">{{ user_.username }}</a>
+                            <a href="{{ url_for('users.update', id=user_.id)}}">{{ user_.username }}</a>
                         </td>
                         <td>
-                            <a href="{{ url_for('update', id=user_.id)}}">{{ user_.name }}</a>
+                            <a href="{{ url_for('users.update', id=user_.id)}}">{{ user_.name }}</a>
                         </td>
                     </tr>
                 {% endfor %}
             </table>
         </div></div>
 
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center mt-2">
             {% for massage in get_flashed_messages() %}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <strong>{{ massage }}</strong>

@@ -10,7 +10,8 @@
     
     <div class="d-flex justify-content-center ">
         <div class="col-xl-10 col-lg-9 col-md-8 col-sm-7 col-xs-4 bg-gray">
-<!--картинка-->
+
+<!--image-->
             <div class="row justify-content-center">
                 <div class="card border-light bg-gray shadow" style="width: 25rem; padding: 0;">
                     {% if cat.cat_pic %}
@@ -20,7 +21,9 @@
                 {% endif %}
             </div>
         </div>
-        <!--картинка-->
+
+
+<!--category-->
             <div class="row align-items-center justify-content-center ">
                 <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col ">
@@ -33,6 +36,8 @@
                 </div>
             </div>
 
+
+<!--age-->
             <div class="row align-items-center justify-content-center">
                 <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
@@ -44,6 +49,8 @@
                 </div>
             </div>
 
+
+<!--cost-->
             <div class="row align-items-center justify-content-center">
                 <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
@@ -62,6 +69,8 @@
                 </div>
             </div>
 
+
+<!--city-->
             <div class="row align-items-center justify-content-center">
                 <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
@@ -73,6 +82,8 @@
                 </div>
             </div>
 
+
+<!--contact-->
             <div class="row align-items-center justify-content-center">
                 <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
@@ -84,6 +95,8 @@
                 </div>
             </div>
 
+
+<!--info-->
             {% if cat.info %}
                 <div class="row align-items-center justify-content-center">
                     <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
@@ -97,6 +110,8 @@
                 </div>
             {% endif %}
 
+
+<!--poster name-->
             <div class="row align-items-center justify-content-center">
                 <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
@@ -108,6 +123,8 @@
                 </div>
             </div>
 
+
+<!--added date-->
             <div class="row align-items-center justify-content-center">
                 <div class="row bg-dark shadow" style="max-width: 25rem; padding: 0;">
                     <div class="col">
@@ -119,14 +136,15 @@
                 </div>
             </div>
 
+<!--buttons-->
             <div class="row align-items-center justify-content-center">
                 <div class="row bg-dark shadow" style="width: 25rem; padding: 0;">
                     <div class="col">
                         <div class="p-2 text-white text-center bg-dark">
                             <b>
-                            <a href="{{ url_for('cats') }}" class="btn btn-outline-secondary">Back</a>
+                            <a href="{{ url_for('cats.cats') }}" class="btn btn-outline-secondary">Back</a>
                                 {% if cat.poster_id == current_user.id or current_user.id == 1 %}
-                                    <a href="{{ url_for('edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>
+                                    <a href="{{ url_for('cats.edit_cat', id=cat.id) }}" class="btn btn-outline-secondary">Edit</a>
 
                                     <a class="btn btn-outline-danger" data-bs-toggle="collapse" href="#warningbeforedelete" role="button" aria-expanded="false" aria-controls="collapseExample">Delete Cat
                                 </a>
@@ -135,7 +153,7 @@
                                         <strong>Delete This Cat?</strong>
                                         <br>
                                         <p>
-                                            <a href="{{ url_for('delete_cat', id=cat.id)}}" class="btn btn-danger btn-sm ">Yes! Delete!</a>
+                                            <a href="{{ url_for('cats.delete_cat', id=cat.id)}}" class="btn btn-danger btn-sm ">Yes! Delete!</a>
                                         </p>
                                     </div>
                                 </div>

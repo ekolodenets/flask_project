@@ -30,6 +30,6 @@ def downgrade():
     sa.Column('cat_id', sa.INTEGER(), autoincrement=False, nullable=True),
     sa.Column('category_id', sa.INTEGER(), autoincrement=False, nullable=True),
     sa.ForeignKeyConstraint(['cat_id'], ['cats.id'], name='cats_category_cat_id_fkey'),
-    sa.ForeignKeyConstraint(['category_id'], ['category.id'], name='cats_category_category_id_fkey')
+    sa.ForeignKeyConstraint(['category_id'], ['categories.id'], name='cats_category_category_id_fkey')
     )
     # ### end Alembic commands ###

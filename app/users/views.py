@@ -24,7 +24,7 @@ def allowed_file(filename):
 '''USER BLOCK'''
 
 # Add User
-@users_blueprint.route('/add', methods=['GET', 'POST'])
+@users_blueprint.route('/register', methods=['GET', 'POST'])
 def add_user():
     name = None
     form = UserForm()

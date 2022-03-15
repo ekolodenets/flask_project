@@ -53,6 +53,7 @@
                 </tr>
                 </thead>
 
+                {% if current_user.is_authenticated %}
                 {% for user_ in flask1[:5] %}
                     <tr>
                         <td>
@@ -66,6 +67,26 @@
                         </td>
                     </tr>
                 {% endfor %}
+
+            {% else %}
+
+                    {% for user_ in flask1[:5] %}
+                    <tr>
+                        <td>
+                            {{ user_.id }}.
+                        </td>
+                        <td>
+                            {{ user_.username }}
+                        </td>
+                        <td>
+                            {{ user_.name }}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            {% endif %}
+
+
             </table>
         </div></div>
 

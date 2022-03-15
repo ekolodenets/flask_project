@@ -50,32 +50,81 @@ button.clear {
 /*set row table linkable*/
 td a {
     display: block;
-    /*border: 1px solid black;*/
-    /*padding: 16px;*/
     text-decoration: none;
-/*delete blue color link*/
 }
 
 a {
+    color: white;
     text-decoration: none;
-    color: #eeeeee;
 }
 
 a:hover {
+    color: white;
     text-decoration: none;
-    color: red;
 }
+
+.navbar-brand {
+    color: mediumvioletred;
+    font-weight: 600;
+}
+
+.navbar-brand:hover {
+    color: mediumvioletred;
+    font-weight: 600;
+}
+
 
 td a:link {
   color: black;
 }
 
-
 td a:visited {
   color: black;
 }
 
+.nav-item a {
+    text-decoration: none;
+    opacity: 1;
+    position: relative;
+    color: gray;
+    font-weight: 500;
+}
+.nav-item a:hover {
+    background-color: unset !important;
+    color: black;
+    /*top: 2px;*/
+}
 
+.nav-item a:active {
+    background-color: unset !important;
+    color: black;
+    /*top: 2px;*/
+}
+
+.nav-item a:visited {
+    text-decoration: none;
+    color: black;
+}
+
+
+.nav-item a::before {
+    content: '';
+    display: block;
+    border-radius: 10px;
+    height: 3px;
+    background: gray;
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    transform: scale(0, 1);
+    transition: transform ease-in-out 250ms;
+
+}
+
+.nav-item a:hover::before {
+    transform: scale(1, 1);
+}
 /*dd {font-size:1rem;} !*1rem = 16px*!*/
 /*
 ####################################################

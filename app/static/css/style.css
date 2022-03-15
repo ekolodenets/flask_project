@@ -41,12 +41,6 @@ button.clear {
   margin-left: auto;
 }
 
-/*set table compact*/
-.table {
-   /*align-content: center;*/
-   /*width: 40% !important;*/
-}
-
 /*set row table linkable*/
 td a {
     display: block;
@@ -63,16 +57,27 @@ a:hover {
     text-decoration: none;
 }
 
+a.nav-link.dropdown-toggle {
+    color: black;
+    text-decoration: none;
+}
+
 .navbar-brand {
     color: mediumvioletred;
     font-weight: 600;
+    transition: all 0.5s ease-out;
 }
 
 .navbar-brand:hover {
-    color: mediumvioletred;
-    font-weight: 600;
-}
+    content: "Reply!";
 
+    color: white;
+    font-weight: 600;
+    display: block;
+    border-radius: 10px;
+    background: mediumvioletred;
+    box-shadow:0 0 20px mediumvioletred;
+}
 
 td a:link {
   color: black;
@@ -82,13 +87,7 @@ td a:visited {
   color: black;
 }
 
-.nav-item a {
-    text-decoration: none;
-    opacity: 1;
-    position: relative;
-    color: gray;
-    font-weight: 500;
-}
+
 .nav-item a:hover {
     background-color: unset !important;
     color: black;
@@ -106,6 +105,13 @@ td a:visited {
     color: black;
 }
 
+.nav-item a {
+    text-decoration: none;
+    opacity: 1;
+    position: relative;
+    color: gray;
+    font-weight: 500;
+}
 
 .nav-item a::before {
     content: '';
@@ -113,6 +119,7 @@ td a:visited {
     border-radius: 10px;
     height: 3px;
     background: gray;
+    box-shadow:0 0 10px gray;
     position: absolute;
     bottom: -1px;
     left: 0;
